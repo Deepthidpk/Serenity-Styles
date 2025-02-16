@@ -113,7 +113,7 @@ $error_message = "No active user found with this email!";
                 <label class="form-check-label" for="remember">Remember me</label>
               </div>
               <div>
-                <a href="#" class="text-primary">Forgot Password?</a>
+                <a href="fpass.php" class="text-primary">Forgot Password?</a>
               </div>
             </div>
             <div class="form-group">

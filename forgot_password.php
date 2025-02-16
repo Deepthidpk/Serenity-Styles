@@ -1,54 +1,41 @@
-
-
 <?php
-include 'connect.php';
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $email = $_POST['email'];
+    include("reset_mail.php");
+    // Connect to MySQL database
+    require_once("connect.php");
 
-header('Content-Type: application/json');
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
-
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        echo json_encode(['status' => 'error', 'message' => 'Invalid email format']);
-        exit;
+    // Check connection
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
     }
 
-    // Check if email exists
-    $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows === 0) {
-        echo json_encode(['status' => 'error', 'message' => 'Email not found']);
-        exit;
-    }
-
-    // Generate reset token
-    $reset_token = bin2hex(random_bytes(32));
-    $expiry = date('Y-m-d H:i:s', strtotime('+1 hour'));
-
-    // Store reset token
-    $stmt = $conn->prepare("UPDATE users SET reset_token = ?, reset_token_expiry = ? WHERE email = ?");
-    $stmt->bind_param("sss", $reset_token, $expiry, $email);
+    // Check if the username exists in the database
+    $sql = "SELECT * FROM tbl_login WHERE email = '$email' AND status='Active'";
+    $result = $conn->query($sql);
     
-    if ($stmt->execute()) {
-        // Send reset email (implementation depends on your email system)
-        $reset_link = "https://yourwebsite.com/reset_password.php?token=" . $reset_token;
-        
-        // Email sending logic would go here
-        // Use PHPMailer or similar library to send email
+    if ($result->num_rows > 0) {
+        $user = $result->fetch_assoc();
+       
+        $to = $user['email'];
+     //Generate a unique reset password link
+     $timestamp = time() + (2 * 3600); // Link expires in 24 hours
+     
+        //Generate a unique reset password link
+        $resetLink = "http://localhost/coffeeduplicate/reset_password.php?email=" . urlencode($email) . "&timestamp=" . $timestamp;
 
-        echo json_encode([
-            'status' => 'success', 
-            'message' => 'Password reset link sent to your email'
-        ]);
+        // Send email with the reset link
+        $subject = "Password Reset";
+        $message = "Click the following link to reset your password: <a href='$resetLink'>$resetLink</a>";
+        // Use PHP's mail() function or a library like PHPMailer to send the email
+        smtp_mailer($to, $subject, $message);
+        echo "Password reset link has been sent to your email address.";
     } else {
-        echo json_encode(['status' => 'error', 'message' => 'Unable to process request']);
+        echo "Username not found.";
+        header('location:fpass.php');
     }
 
-    $stmt->close();
-    $conn->close();
+   
 }
-
 ?>
+<!-- HTML form for entering the username -->

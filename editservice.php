@@ -235,8 +235,8 @@ $(document).ready(function () {
     }, "Quantity must be a positive whole number.");
 
     jQuery.validator.addMethod('valid_Price', function (value, element) {
-        return /^[+]?\d+(\.\d+)?$/.test(value) && parseFloat(value) > 0;
-    }, "Price must be greater than 0.");
+        return /^[+]?\d+(\.\d+)?$/.test(value) && parseFloat(value) >=100;
+    }, "Price must be minimum 100.");
 
     jQuery.validator.addMethod('serviceImage', function (value, element) {
         // Allow form submission if no new image is uploaded (use existing image)
@@ -301,7 +301,7 @@ $(document).ready(function () {
             },
             service_price: {
                 required: "Please enter the price",
-                valid_Price: "Price must be a positive number"
+                valid_Price: "Price must be minimum 100"
             },
             service_image: {
                 serviceImage: "Only image files (PNG, JPG, JPEG, or SVG) are allowed."

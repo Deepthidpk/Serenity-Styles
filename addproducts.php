@@ -245,7 +245,7 @@ if ($conn->query($sql) === TRUE) {
 }, "Quantity should be a positive whole number greater than 0");
 
     jQuery.validator.addMethod('valid_Productprice', function (value, element) {
-    return /^[+]?(?:\d+|\d{1,3}(?:,\d{3})+)(?:\.\d+)?$/.test(value) && parseFloat(value) >= 100;
+    return /^[+]?(?:\d+|\d{1,3}(?:,\d{3})+)(?:\.\d+)?$/.test(value) && parseFloat(value) >=100;
 }, "Price should be minimum 100");
 
 jQuery.validator.addMethod('productImage', function(value, element, param) {
