@@ -52,7 +52,7 @@ include("connect.php");
 	      </button>
 	      <div class="collapse navbar-collapse" id="ftco-nav">
 	        <ul class="navbar-nav ml-auto">
-	          <li class="nav-item"><a href="index.php" class="nav-link">Home</a></li>
+	          <li class="nav-item"><a href="userindex.php" class="nav-link">Home</a></li>
 	          
 	          
 
@@ -149,7 +149,7 @@ if ($result->num_rows > 0) {
                     <p>' . $pro_description . '</p>
                     <p class="price"><span>Rs.' . number_format($price, 2) . '</span></p>
                   
-                    <form action="add-to-cart.php" method="GET">
+                    <form action="cart.php" method="POST">
                         <input type="hidden" name="product_id" value="' . $product_id . '">
                         
                         <button type="submit" class="btn btn-primary btn-outline-primary">Add to Cart</button>
@@ -200,7 +200,7 @@ if ($result->num_rows > 0) {
                     <p>' . $pro_description . '</p>
                     <p class="price"><span>Rs.' . number_format($price, 2) . '</span></p>
                   
-                    <form action="add-to-cart.php" method="GET">
+                    <form action="cart.php" method="POST">
                         <input type="hidden" name="product_id" value="' . $product_id . '">
                         
                         <button type="submit" class="btn btn-primary btn-outline-primary">Add to Cart</button>
@@ -249,7 +249,7 @@ if ($result->num_rows > 0) {
                     <p>' . $pro_description . '</p>
                     <p class="price"><span>Rs.' . number_format($price, 2) . '</span></p>
                   
-                    <form action="add-to-cart.php" method="GET">
+                    <form action="cart.php" method="POST">
                         <input type="hidden" name="product_id" value="' . $product_id . '">
                         
                         <button type="submit" class="btn btn-primary btn-outline-primary">Add to Cart</button>
@@ -299,7 +299,7 @@ if ($result->num_rows > 0) {
                     <p>' . $pro_description . '</p>
                     <p class="price"><span>Rs.' . number_format($price, 2) . '</span></p>
                   
-                    <form action="add-to-cart.php" method="GET">
+                    <form action="cart.php" method="POST">
                         <input type="hidden" name="product_id" value="' . $product_id . '">
                         
                         <button type="submit" class="btn btn-primary btn-outline-primary">Add to Cart</button>

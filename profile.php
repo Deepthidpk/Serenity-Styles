@@ -59,18 +59,52 @@ $user = $result->fetch_assoc();
                 <span class="oi oi-menu"></span> Menu
             </button>
             <div class="collapse navbar-collapse" id="ftco-nav">
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item"><a href="index.php" class="nav-link">Home</a></li>
-                    <li class="nav-item"><a href="services.html" class="nav-link">Services</a></li>
-                    <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
-                    <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
-                    <li class="nav-item active"><a href="profile.php" class="nav-link">Profile</a></li>
-                    <li class="nav-item cart"><a href="cart.html" class="nav-link">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active"><a href="userindex.php" class="nav-link">Home</a></li>
+                <li class="nav-item"><a href="services.php" class="nav-link">Services</a></li>
+                <li class="nav-item"><a href="about.php" class="nav-link">About</a></li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="shop.php" id="dropdown04" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Products</a>
+                    <div class="dropdown-menu" aria-labelledby="dropdown04">
+                        <a class="dropdown-item" href="shop.php">Products</a>
+                        <a class="dropdown-item" href="product-single.php">Single Product</a>
+                        <a class="dropdown-item" href="cart.php">Cart</a>
+                        <a class="dropdown-item" href="checkout.php">Checkout</a>
+                    </div>
+                </li>
+                <li class="nav-item"><a href="contact.php" class="nav-link">Contact</a></li>
+                <li class="nav-item"><a href="booknow.php" class="nav-link">Book Now</a></li>
+                
+                <?php if(isset($_SESSION['username'])){?>
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <img src="images/profile2.jpg" alt="Profile" id="profile-icon" class="rounded-circle" style="width: 30px; height: 30px;">
+        </a>
+        <?php
+		$user_id=$_SESSION['user_id'];
+		?>
+<div class="dropdown-menu" aria-labelledby="profileDropdown">
+    <a class="dropdown-item" href="profile.php?user_id=<?php echo $user_id; ?>">Profile</a>
+   
+    <a class="dropdown-item" href="viewappointments.html?user_id=<?php echo $user_id; ?>">View Appointments</a>
+    <a class="dropdown-item" href="vieworders.html?user_id=<?php echo $user_id; ?>">View Orders</a>
+    <a class="dropdown-item" href="logout.php?user_id=<?php echo $user_id; ?>">Log Out</a>
+</div>
+
+    </li> <?php } ?>
+
+
+
+                <li class="nav-item cart">
+                    <a href="cart.php" class="nav-link">
                         <span class="icon icon-shopping_cart"></span>
-                        <span class="bag d-flex justify-content-center align-items-center"><small>1</small></span>
-                    </a></li>
-                </ul>
-            </div>
+                        <span class="bag d-flex justify-content-center align-items-center">
+                            <small>1</small>
+                        </span>
+                    </a>
+                </li>
+            </ul>
+        </div>
         </div>
     </nav>
 

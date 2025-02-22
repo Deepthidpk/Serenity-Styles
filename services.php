@@ -1,6 +1,22 @@
 <?php
 include("connect.php");
+
+
+
+if(!isset($_SESSION['username']) || $_SESSION['username']!="user"){ // Checks if the user is logged in
+	
+	// Unset all session variables
+    $_SESSION = array();
+
+    // Destroy the session
+    session_destroy();
+   
+	header('Location: login.php'); // Redirects to login.php if the user is not logged in
+    exit(); // It's good practice to call exit() after header to stop further script execution
+}
+
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -73,7 +89,7 @@ include("connect.php");
 	      </button>
 	      <div class="collapse navbar-collapse" id="ftco-nav">
 	        <ul class="navbar-nav ml-auto">
-	          <li class="nav-item"><a href="index.php" class="nav-link">Home</a></li>
+	          <li class="nav-item"><a href="userindex.php" class="nav-link">Home</a></li>
 	          
 	          <li class="nav-item"><a href="services.php" class="nav-link">Services</a></li>
 
@@ -91,10 +107,30 @@ include("connect.php");
             </li>
 	          <li class="nav-item"><a href="contact.php" class="nav-link">Contact</a></li>
 			  <li class="nav-item"><a href="booknow.php" class="nav-link">Book Now</a></li>
+
+        <?php if(isset($_SESSION['username'])){?>
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <img src="images/profile2.jpg" alt="Profile" id="profile-icon" class="rounded-circle" style="width: 30px; height: 30px;">
+        </a>
+        <?php
+		$user_id=$_SESSION['user_id'];
+		?>
+<div class="dropdown-menu" aria-labelledby="profileDropdown">
+    <a class="dropdown-item" href="profile.php?user_id=<?php echo $user_id; ?>">Profile</a>
+   
+    <a class="dropdown-item" href="viewappointments.html?user_id=<?php echo $user_id; ?>">View Appointments</a>
+    <a class="dropdown-item" href="vieworders.html?user_id=<?php echo $user_id; ?>">View Orders</a>
+    <a class="dropdown-item" href="logout.php?user_id=<?php echo $user_id; ?>">Log Out</a>
+</div>
+
+    </li> <?php } ?>
+
 	          <li class="nav-item cart"><a href="cart.php" class="nav-link"><span class="icon icon-shopping_cart"></span><span class="bag d-flex justify-content-center align-items-center"><small>1</small></span></a></li>
 	        </ul>
 	      </div>
 		  </div>
+
 	  </nav>
     <!-- END nav -->
 

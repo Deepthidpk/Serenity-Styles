@@ -19,9 +19,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $user_id=$conn->insert_id;
         $query="INSERT INTO tbl_login(user_id,email,password,role)VALUES('$user_id','$email','$pass','user')";
         $conn->query($query);
-        if($conn){
-           header('location: http://localhost/coffeeduplicate/login.php');
+       
+        if ($conn) {
+            require "send_otp.php";
+            smtp_mailer($email);
+        
+            // SweetAlert script
+            echo "<script>
+                    setTimeout(function() {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'OTP Sent!',
+                            text: 'Check your email for the OTP.',
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            window.location.href = 'http://localhost/coffeeduplicate/verify_otp.php';
+                        });
+                    }, 500);
+                  </script>";
         }
+        
+        
 
     }
         
@@ -36,6 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     
+
     <!-- Use the same CSS files as your template -->
     <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" rel="stylesheet">
     <link rel="stylesheet" href="css/open-iconic-bootstrap.min.css">
@@ -50,6 +69,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="css/flaticon.css">
     <link rel="stylesheet" href="css/icomoon.css">
     <link rel="stylesheet" href="css/style.css">
+    <!-- sweet alert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   </head>
   <body>
     <!-- Navigation Bar -->
@@ -140,9 +161,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         return /^[^0-9][a-zA-Z0-9._%+-]+@(gmail|yahoo|mca.ajce)(\.com|\.in)$/i.test(value);
     }, "Please enter a valid email address with Gmail, Yahoo, or mca.ajce.in domain, and the first character should not be a number.");
 
-    jQuery.validator.addMethod('all', function (value, element) {
-        return /^[^-\s][a-zA-Z0-9_!@#$%^&*(),.?":{}|<>-]+$/.test(value);
-    }, "Spaces or invalid characters are not allowed.");
+
+    jQuery.validator.addMethod('strongPassword', function (value, element) {
+    return this.optional(element) || 
+           /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,}$/.test(value);
+}, "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one digit, and one special character.");
+
 
     jQuery.validator.addMethod('indianPhone', function (value, element) {
         return /^[6-9]\d{9}$/.test(value);
@@ -159,7 +183,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             email: {
                 required: true,
                 email: true,
-                customEmail: true
+                customEmail: true,
+                remote: {     //built in function in jquery  
+                    url: "check_email.php", //file I created
+                    type: "POST",
+                    data: {
+                        username: function() {  // input for check_email.php 
+                            return $("#email").val();
+                        }
+                    }
+                }
             },
             phone_no: {
                 required: true,
@@ -172,6 +205,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             pass: {
                 required: true,
                 minlength: 8,
+                strongPassword: true,
                 all: true
             },
             conpass: {
@@ -187,7 +221,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             email: {
                 required: "Please enter your email address",
                 email: "Please enter a valid email address",
-                customEmail: "Please enter a valid email address with Gmail, Yahoo,  or mca.ajce.in domain, and the first character should not be a number."
+                customEmail: "Please enter a valid email address with Gmail, Yahoo,  or mca.ajce.in domain, and the first character should not be a number.",
+                remote:"email already exist! , Try another email"
+
+
             },
             phone_no: {
                 required: "Phone number is required",
@@ -199,8 +236,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             },
             pass: {
                 required: "Please provide a password",
-                all: "Spaces or invalid characters are not allowed",
-                minlength: "Your password must be at least 8 characters long"
+                minlength: "Your password must be at least 8 characters long",
+                strongPassword: "Password must contain uppercase, lowercase, digit, and special character.",
+
+                all: "Spaces or invalid characters are not allowed"
+               
             },
             conpass: {
                 required: "Please re-enter the password",

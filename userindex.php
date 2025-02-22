@@ -1,6 +1,13 @@
 <?php
 session_start(); // Starts the session to access session variables
-if(!isset($_SESSION['username'])){ // Checks if the user is logged in
+
+if(!isset($_SESSION['username']) || $_SESSION['username']!="user"){ // Checks if the user is logged in
+	
+	// Unset all session variables
+    $_SESSION = array();
+
+    // Destroy the session
+    session_destroy();
    
 	header('Location: login.php'); // Redirects to login.php if the user is not logged in
     exit(); // It's good practice to call exit() after header to stop further script execution
@@ -96,13 +103,13 @@ if(!isset($_SESSION['username'])){ // Checks if the user is logged in
   <body>
   <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
     <div class="container">
-        <a class="navbar-brand" href="index.php">Beauty<small>Blend</small></a>
+        <a class="navbar-brand" href="userindex.php">Beauty<small>Blend</small></a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="oi oi-menu"></span> Menu
         </button>
         <div class="collapse navbar-collapse" id="ftco-nav">
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item active"><a href="index.php" class="nav-link">Home</a></li>
+                <li class="nav-item active"><a href="userindex.php" class="nav-link">Home</a></li>
                 <li class="nav-item"><a href="services.php" class="nav-link">Services</a></li>
                 <li class="nav-item"><a href="about.php" class="nav-link">About</a></li>
                 <li class="nav-item dropdown">

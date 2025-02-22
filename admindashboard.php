@@ -3,7 +3,16 @@
 
 // Database Connection
 include 'connect.php'; // Ensure you have a db_connect.php file that sets up the $conn variable
+if(!isset($_SESSION['username']) || $_SESSION['username']!="admin"){ // Checks if the user is logged in
+    
+   // Unset all session variables
+   $_SESSION = array();
 
+   // Destroy the session
+   session_destroy();
+	header('Location: login.php'); // Redirects to login.php if the user is not logged in
+    exit(); // It's good practice to call exit() after header to stop further script execution
+}
 // Fetch total users
 $userQuery = "SELECT COUNT(*) AS total_users FROM tbl_login WHERE status='active'";
 $userResult = mysqli_query($conn, $userQuery);

@@ -109,8 +109,8 @@ $error_message = "No active user found with this email!";
             </div>
             <div class="form-group d-flex justify-content-between">
               <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="remember">
-                <label class="form-check-label" for="remember">Remember me</label>
+                <!-- <input type="checkbox" class="form-check-input" id="remember">
+                <label class="form-check-label" for="remember">Remember me</label> -->
               </div>
               <div>
                 <a href="fpass.php" class="text-primary">Forgot Password?</a>
