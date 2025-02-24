@@ -140,11 +140,17 @@
         jQuery.validator.addMethod('all', function(value, element) {
             return /^[^-\s][a-zA-Z0-9_!@#$%^&*(),.?":{}|<>-]+$/.test(value);
         });
+        jQuery.validator.addMethod('strongPassword', function (value, element) {
+    return this.optional(element) || 
+           /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,}$/.test(value);
+}, "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one digit, and one special character.");
+
         $('#resetform').validate({
             rules: {
                 new_password: {
                     required: true,
                     minlength: 8,
+                    strongPassword: true,
                     all: true 
                 },
                 confirm_password: {
@@ -156,6 +162,8 @@
                 new_password: {
                     required: "Please provide a password",
                     minlength: "Your password must be at least 8 characters long",
+                    strongPassword: "Password must contain uppercase, lowercase, digit, and special character.",
+
                     all: "Spaces are not allowed in the password"
                 },
                 confirm_password: {

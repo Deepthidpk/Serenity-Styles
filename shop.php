@@ -1,5 +1,12 @@
 <?php
 include("connect.php");
+$email=$_SESSION["email"];
+$sql = "SELECT u.name FROM tbl_user AS u JOIN tbl_login AS l ON u.user_id = l.user_id WHERE l.email = '$email'";
+
+$result=$conn->query($sql);
+if ($result->num_rows > 0){
+	$row=$result->fetch_assoc();
+}
 ?>
 
 <!DOCTYPE html>

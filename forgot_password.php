@@ -29,9 +29,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $message = "Click the following link to reset your password: <a href='$resetLink'>$resetLink</a>";
         // Use PHP's mail() function or a library like PHPMailer to send the email
         smtp_mailer($to, $subject, $message);
-        echo "Password reset link has been sent to your email address.";
+       // echo "Password reset link has been sent to your email address.";
+       $_SESSION['success'] = "Reset mail send to your mail successfully!";
+
+       header('location:login.php');
     } else {
-        echo "Username not found.";
+        $_SESSION['error'] = "username is invalid or blocked !";
+
+        
         header('location:fpass.php');
     }
 

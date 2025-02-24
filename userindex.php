@@ -1,7 +1,8 @@
 <?php
-session_start(); // Starts the session to access session variables
+include("connect.php");
 
 if(!isset($_SESSION['username']) || $_SESSION['username']!="user"){ // Checks if the user is logged in
+	
 	
 	// Unset all session variables
     $_SESSION = array();
@@ -12,7 +13,13 @@ if(!isset($_SESSION['username']) || $_SESSION['username']!="user"){ // Checks if
 	header('Location: login.php'); // Redirects to login.php if the user is not logged in
     exit(); // It's good practice to call exit() after header to stop further script execution
 }
+$email=$_SESSION["email"];
+$sql = "SELECT u.name FROM tbl_user AS u JOIN tbl_login AS l ON u.user_id = l.user_id WHERE l.email = '$email'";
 
+$result=$conn->query($sql);
+if ($result->num_rows > 0){
+	$row=$result->fetch_assoc();
+}
 ?>
 
 <!DOCTYPE html>
@@ -133,6 +140,7 @@ if(!isset($_SESSION['username']) || $_SESSION['username']!="user"){ // Checks if
 		$user_id=$_SESSION['user_id'];
 		?>
 <div class="dropdown-menu" aria-labelledby="profileDropdown">
+<a class="dropdown-item" href="profile.php?user_id=<?php echo $user_id; ?>"><?php echo $row['name']; ?></a>
     <a class="dropdown-item" href="profile.php?user_id=<?php echo $user_id; ?>">Profile</a>
    
     <a class="dropdown-item" href="viewappointments.html?user_id=<?php echo $user_id; ?>">View Appointments</a>

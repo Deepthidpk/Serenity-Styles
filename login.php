@@ -21,8 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($status === 'Active') {
       if ($demail === $email && $dpassword === $password) {
         $_SESSION['email'] = $demail;
-
-        if ($row['role'] == 'admin') {
+         if ($row['role'] == 'admin') {
           $_SESSION['username'] = "admin";
           header('location: http://localhost/coffeeduplicate/admindashboard.php');
         } else if ($row['role'] == 'user') {
@@ -152,6 +151,22 @@ $error_message = "No active user found with this email!";
             icon: 'error',
             title: 'Oops...',
             text: "<?php echo $error_message; ?>"
+        });
+    <?php } ?>
+
+    <?php if (isset($_SESSION['error'])) { ?>
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: "<?php echo $_SESSION['error']; ?>"
+        });
+    <?php } ?>
+
+    <?php if (isset($_SESSION['success'])) { ?>
+        Swal.fire({
+            icon: 'success',
+            title: 'success...',
+            text: "<?php echo $_SESSION['success']; ?>"
         });
     <?php } ?>
 </script>

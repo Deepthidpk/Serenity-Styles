@@ -1,5 +1,5 @@
 <?php
-include 'connect.php'; // Assuming this script creates the table if not already created
+include 'connect.php'; 
 
 
 
@@ -8,7 +8,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $name = $_POST['name'];
     $phone_no =$_POST['phone_no'];
     $email = $_POST['email'];
-    
     $pass = $_POST['pass'];
     $conpass = $_POST['conpass'];
      
@@ -76,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
       <div class="container">
-        <a class="navbar-brand" href="index.html">Beauty<small>Blend</small></a>
+        <a class="navbar-brand" href="index.php">Beauty<small>Blend</small></a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
           <span class="oi oi-menu"></span> Menu
         </button>
@@ -185,7 +184,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 email: true,
                 customEmail: true,
                 remote: {     //built in function in jquery  
-                    url: "check_email.php", //file I created
+                    url: "check_email.php", 
                     type: "POST",
                     data: {
                         username: function() {  // input for check_email.php 

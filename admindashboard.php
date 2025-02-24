@@ -211,13 +211,13 @@ $totalServices = $serviceRow['total_services'];
                 </div>
             </div>
 
-            <div class="chart-container">
+            <!-- <div class="chart-container">
                 <canvas id="myChart"></canvas>
-            </div> 
+            </div>  -->
         </div>
     </div>
 
-<script>
+<!-- <script>
         // Initialize Chart
         const ctx = document.getElementById('myChart').getContext('2d');
         new Chart(ctx, {
@@ -236,6 +236,6 @@ $totalServices = $serviceRow['total_services'];
                 maintainAspectRatio: false
             }
         });
-    </script>
+    </script> -->
 </body>
 </html>

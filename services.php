@@ -3,17 +3,17 @@ include("connect.php");
 
 
 
-if(!isset($_SESSION['username']) || $_SESSION['username']!="user"){ // Checks if the user is logged in
+// if(!isset($_SESSION['username']) || $_SESSION['username']!="user"){ // Checks if the user is logged in
 	
-	// Unset all session variables
-    $_SESSION = array();
+// 	// Unset all session variables
+//     $_SESSION = array();
 
-    // Destroy the session
-    session_destroy();
+//     // Destroy the session
+//     session_destroy();
    
-	header('Location: login.php'); // Redirects to login.php if the user is not logged in
-    exit(); // It's good practice to call exit() after header to stop further script execution
-}
+// 	header('Location: login.php'); // Redirects to login.php if the user is not logged in
+//     exit(); // It's good practice to call exit() after header to stop further script execution
+// }
 
 ?>
 
@@ -108,7 +108,8 @@ if(!isset($_SESSION['username']) || $_SESSION['username']!="user"){ // Checks if
 	          <li class="nav-item"><a href="contact.php" class="nav-link">Contact</a></li>
 			  <li class="nav-item"><a href="booknow.php" class="nav-link">Book Now</a></li>
 
-        <?php if(isset($_SESSION['username'])){?>
+        <?php if (isset($_SESSION['username']) && $_SESSION['username'] === 'user') { ?>
+
     <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <img src="images/profile2.jpg" alt="Profile" id="profile-icon" class="rounded-circle" style="width: 30px; height: 30px;">

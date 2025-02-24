@@ -276,6 +276,7 @@ $result = $conn->query($sql);
                             <th>Role</th>
                             <th>Name</th>
                             <th>Phone No</th>
+                            <th>Status</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -290,6 +291,7 @@ if ($result->num_rows > 0) {
             <td>" . htmlspecialchars($row["role"]) . "</td>
             <td>" . htmlspecialchars($row["name"]) . "</td>
             <td>" . htmlspecialchars($row["phone_no"]) . "</td>
+            <td>" . htmlspecialchars($row["status"]) . "</td>
             <td>";
         
         // Check user status to determine which button to show

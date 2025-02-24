@@ -155,7 +155,7 @@ $user = $result->fetch_assoc();
                         <div class="w-100"></div>
                         <div class="col-md-12 mt-4">
                             <button type="submit" class="btn btn-primary py-3 px-4">Save Changes</button>
-                            <a href="change-password.php" class="btn btn-secondary py-3 px-4">Change Password</a>
+                            <!-- <a href="change-password.php" class="btn btn-secondary py-3 px-4">Change Password</a> -->
                         </div>
                     </div>
                 </div>
@@ -213,7 +213,7 @@ $user = $result->fetch_assoc();
     $(document).ready(function () {
     // Custom validation methods
     jQuery.validator.addMethod('lettersonly', function (value, element) {
-        return /^[A-Za-z\s-]+$/.test(value);  // Ensures only letters, spaces, and hyphens
+        return /^[A-Za-z\s]+$/.test(value);  // Ensures only letters, spaces
     }, "Please use letters only.");
 
     jQuery.validator.addMethod('indianPhone', function (value, element) {

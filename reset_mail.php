@@ -12,7 +12,7 @@ function smtp_mailer($to, $subject, $msg) //calling function for creating mail
     $mail->CharSet = 'UTF-8';
     //$mail->SMTPDebug = 2; 
     $mail->Username = "serenitystyles.online@gmail.com"; // Sender's Email
-    $mail->Password = "jvyaqzlqqwjhywdu"; // Sender's Email App Password
+    $mail->Password = "bisqzcfshomlyver"; // Sender's Email App Password
     $mail->SetFrom("serenitystyles.online@gmail.com"); // Sender's Email
     $mail->Subject = $subject; //subject of sending mail 
     $mail->Body = $msg; //body of sending mail
