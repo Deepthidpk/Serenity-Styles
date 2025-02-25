@@ -1,3 +1,16 @@
+<!-- <?php
+include("connect.php");
+if (!empty($_SESSION["email"])) {
+$email=$_SESSION["email"];
+$sql = "SELECT u.name FROM tbl_user AS u JOIN tbl_login AS l ON u.user_id = l.user_id WHERE l.email = '$email'";
+
+$result=$conn->query($sql);
+if ($result->num_rows > 0){
+	$row=$result->fetch_assoc();
+}
+}
+?> -->
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -56,8 +69,42 @@
             </li>
 	          <li class="nav-item active"><a href="contact.php" class="nav-link">Contact</a></li>
             <li class="nav-item"><a href="booknow.php" class="nav-link">Book Now</a></li>
-	          <li class="nav-item cart"><a href="cart.php" class="nav-link"><span class="icon icon-shopping_cart"></span><span class="bag d-flex justify-content-center align-items-center"><small>1</small></span></a></li>
-	        </ul>
+	          <?php if (isset($_SESSION['username']) && $_SESSION['username'] === 'user') { ?>
+
+<li class="nav-item dropdown">
+  <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" data-toggle="dropdown"
+    aria-haspopup="true" aria-expanded="false">
+    <img src="images/profile2.jpg" alt="Profile" id="profile-icon" class="rounded-circle"
+      style="width: 30px; height: 30px;">
+  </a>
+  <?php
+  $user_id = $_SESSION['user_id'];
+  ?>
+  <div class="dropdown-menu" aria-labelledby="profileDropdown">
+    <a class="dropdown-item"
+      href="profile.php?user_id=<?php echo $user_id; ?>"><?php echo $row['name']; ?></a>
+    <a class="dropdown-item" href="profile.php?user_id=<?php echo $user_id; ?>">Profile</a>
+
+    <a class="dropdown-item" href="viewappointments.html?user_id=<?php echo $user_id; ?>">View
+      Appointments</a>
+    <a class="dropdown-item" href="vieworders.html?user_id=<?php echo $user_id; ?>">View
+      Orders</a>
+    <a class="dropdown-item" href="logout.php?user_id=<?php echo $user_id; ?>">Log Out</a>
+  </div>
+
+</li>
+<?php }
+
+?>
+<?php if (isset($_SESSION['username']) && $_SESSION['username'] === 'user') { ?>
+
+  <li class="nav-item cart"><a href="cart.php" class="nav-link"><span
+        class="icon icon-shopping_cart"></span><span
+        class="bag d-flex justify-content-center align-items-center"><small>1</small></span></a>
+  </li>
+<?php }
+
+?>
 	      </div>
 		  </div>
 	  </nav>

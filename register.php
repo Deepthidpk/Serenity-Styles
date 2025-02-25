@@ -3,45 +3,79 @@ include 'connect.php';
 
 
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Get form data
-    $name = $_POST['name'];
-    $phone_no =$_POST['phone_no'];
-    $email = $_POST['email'];
-    $pass = $_POST['pass'];
-    $conpass = $_POST['conpass'];
+// if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+//     // Get form data
+//     $name = $_POST['name'];
+//     $phone_no =$_POST['phone_no'];
+//     $email = $_POST['email'];
+//     $pass = password_hash($_POST['pass'], PASSWORD_DEFAULT);
+
+//     $conpass = $_POST['conpass'];
      
     
    
-        $sql="INSERT INTO tbl_user(name,phone_no)VALUES('$name','$phone_no')";
-        $conn->query($sql);
-        $user_id=$conn->insert_id;
-        $query="INSERT INTO tbl_login(user_id,email,password,role)VALUES('$user_id','$email','$pass','user')";
-        $conn->query($query);
+//         $sql="INSERT INTO tbl_user(name,phone_no)VALUES('$name','$phone_no')";
+//         $conn->query($sql);
+//         $user_id=$conn->insert_id;
+//         $query="INSERT INTO tbl_login(user_id,email,password,role)VALUES('$user_id','$email','$pass','user')";
+//         $conn->query($query);
        
-        if ($conn) {
-            require "send_otp.php";
-            smtp_mailer($email);
+//         if ($conn) {
+//             require "send_otp.php";
+//             smtp_mailer($email);
         
-            // SweetAlert script
-            echo "<script>
-                    setTimeout(function() {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'OTP Sent!',
-                            text: 'Check your email for the OTP.',
-                            confirmButtonText: 'OK'
-                        }).then(() => {
-                            window.location.href = 'http://localhost/coffeeduplicate/verify_otp.php';
-                        });
-                    }, 500);
-                  </script>";
-        }
+//             // SweetAlert script
+//             echo "<script>
+//                     setTimeout(function() {
+//                         Swal.fire({
+//                             icon: 'success',
+//                             title: 'OTP Sent!',
+//                             text: 'Check your email for the OTP.',
+//                             confirmButtonText: 'OK'
+//                         }).then(() => {
+//                             window.location.href = 'http://localhost/coffeeduplicate/verify_otp.php';
+//                         });
+//                     }, 500);
+//                   </script>";
+//         }
         
         
 
-    }
+//     }
         
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+  // Get form data
+  $name = $_POST['name'];
+  $phone_no = $_POST['phone_no'];
+  $email = $_POST['email'];
+  $pass = password_hash($_POST['pass'], PASSWORD_DEFAULT); // 🔒 Password hashed here
+  $conpass = $_POST['conpass'];
+  
+  $sql = "INSERT INTO tbl_user(name, phone_no) VALUES('$name', '$phone_no')";
+  $conn->query($sql);
+  $user_id = $conn->insert_id;
+
+  $query = "INSERT INTO tbl_login(user_id, email, password, role) VALUES('$user_id', '$email', '$pass', 'user')";
+  $conn->query($query);
+
+  if ($conn) {
+      require "send_otp.php";
+      smtp_mailer($email);
+      
+      echo "<script>
+              setTimeout(function() {
+                  Swal.fire({
+                      icon: 'success',
+                      title: 'OTP Sent!',
+                      text: 'Check your email for the OTP.',
+                      confirmButtonText: 'OK'
+                  }).then(() => {
+                      window.location.href = 'http://localhost/coffeeduplicate/verify_otp.php';
+                  });
+              }, 500);
+            </script>";
+  }
+}
 
    
 
