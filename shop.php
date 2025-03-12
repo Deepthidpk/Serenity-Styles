@@ -79,7 +79,7 @@ if ($result->num_rows > 0){
               </div>
             </li>
 	          <li class="nav-item"><a href="contact.php" class="nav-link">Contact</a></li>
-			  <li class="nav-item"><a href="booknow.php" class="nav-link">Book Now</a></li>
+			  
         <?php if (isset($_SESSION['username']) && $_SESSION['username'] === 'user') { ?>
 
 <li class="nav-item dropdown">
@@ -194,7 +194,7 @@ if ($result->num_rows > 0) {
                     <p>' . $pro_description . '</p>
                     <p class="price"><span>Rs.' . number_format($price, 2) . '</span></p>
                   
-                    <form action="cart.php" method="POST">
+                    <form action="addto_cart.php" method="POST">
                         <input type="hidden" name="product_id" value="' . $product_id . '">
                         
                         <button type="submit" class="btn btn-primary btn-outline-primary">Add to Cart</button>
@@ -245,7 +245,7 @@ if ($result->num_rows > 0) {
                     <p>' . $pro_description . '</p>
                     <p class="price"><span>Rs.' . number_format($price, 2) . '</span></p>
                   
-                    <form action="cart.php" method="POST">
+                    <form action="addto_cart.php" method="POST">
                         <input type="hidden" name="product_id" value="' . $product_id . '">
                         
                         <button type="submit" class="btn btn-primary btn-outline-primary">Add to Cart</button>
@@ -294,7 +294,7 @@ if ($result->num_rows > 0) {
                     <p>' . $pro_description . '</p>
                     <p class="price"><span>Rs.' . number_format($price, 2) . '</span></p>
                   
-                    <form action="cart.php" method="POST">
+                    <form action="addto_cart.php" method="POST">
                         <input type="hidden" name="product_id" value="' . $product_id . '">
                         
                         <button type="submit" class="btn btn-primary btn-outline-primary">Add to Cart</button>
@@ -344,7 +344,7 @@ if ($result->num_rows > 0) {
                     <p>' . $pro_description . '</p>
                     <p class="price"><span>Rs.' . number_format($price, 2) . '</span></p>
                   
-                    <form action="cart.php" method="POST">
+                    <form action="addto_cart.php" method="POST">
                         <input type="hidden" name="product_id" value="' . $product_id . '">
                         
                         <button type="submit" class="btn btn-primary btn-outline-primary">Add to Cart</button>

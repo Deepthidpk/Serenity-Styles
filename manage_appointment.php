@@ -10,23 +10,7 @@ if (!isset($_SESSION['username'])) { // Checks if the user is logged in
 //above is for security check ,prevent unauthorized access
 
 // Fetch user data by joining tbl_login and tbl_user
-$sql = "SELECT 
-            l.login_id,
-            l.user_id, 
-            l.email, 
-            l.role,
-            l.status, 
-            u.name, 
-            u.phone_no 
-        FROM 
-            tbl_login l
-        JOIN 
-            tbl_user u 
-        ON 
-            l.user_id = u.user_id
-        WHERE 
-           
-            l.role <>'admin'"; // Fetch only active users based on role or other criteria
+$sql = "SELECT * FROM tbl_appointment WHERE status='Pending' OR status='Approved'";
 $result = $conn->query($sql);
 
 
@@ -240,7 +224,7 @@ $result = $conn->query($sql);
                 <li><a href="admindashboard.php">Dashboard</a></li>
                 <li><a href="viewservices.php">Services</a></li>
                 <li><a href="viewproducts.php">Products</a></li>
-                <li><a href="manage_appointment.php">Appointments</a></li>
+                <li><a href="viewappointments.php">Appointments</a></li>
                 <li><a href="viewuser.php">Users</a></li>
                 <li><a href="logout.php">Logout</a></li>
 
@@ -272,10 +256,13 @@ $result = $conn->query($sql);
                     <thead>
                         <tr>
                             <th>Sl.NO</th>
-                            <th>Email</th>
-                            <th>Role</th>
+                            
+                            
                             <th>Name</th>
                             <th>Phone No</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Service Name</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -287,20 +274,26 @@ if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
         echo "<tr>
             <td>" . $i . "</td>
-            <td>" . htmlspecialchars($row["email"]) . "</td>
-            <td>" . htmlspecialchars($row["role"]) . "</td>
             <td>" . htmlspecialchars($row["name"]) . "</td>
             <td>" . htmlspecialchars($row["phone_no"]) . "</td>
+            <td>" . htmlspecialchars($row["date"]) . "</td>
+            <td>" . htmlspecialchars($row["time"]) . "</td>
+            <td>" . htmlspecialchars($row["service_id"]) . "</td>
             <td>" . htmlspecialchars($row["status"]) . "</td>
             <td>";
         
         // Check user status to determine which button to show
-        if ($row['status'] == 'Active') {
-            echo "<a href='update_status.php?id=" . $row['user_id'] . "&status=Inactive' class='btn btn-xs btn-danger'>Block</a>";
-        } else {
-            echo "<a href='update_status.php?id=" . $row['user_id'] . "&status=Active' class='btn btn-xs btn-success'>Unblock</a>";
+        if ($row['status'] == 'Pending') {
+            echo "<a href='update_appointmentstatus.php?id=" . $row['appointment_id'] . "&status=Cancelled' class='btn btn-xs btn-danger'>Reject</a>";
+         
+            echo "<a href='update_appointmentstatus.php?id=" . $row['appointment_id'] . "&status=Approved' class='btn btn-xs btn-success'>Accept</a>";
         }
-        
+        else{
+            if ($row['status'] == 'Approved') {
+                echo "<button  class='btn btn-xs btn-success' disabled>Approved</button>";
+            }
+
+        }
         echo "</td>
           </tr>";
         $i++;

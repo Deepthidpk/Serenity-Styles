@@ -1,25 +1,108 @@
 <?php
 include("connect.php");
 
-if(!isset($_SESSION['username']) || $_SESSION['username']!="user"){ // Checks if the user is logged in
-	
-	
-	// Unset all session variables
-    $_SESSION = array();
+require __DIR__ . "/vendor/autoload.php";
 
-    // Destroy the session
-    session_destroy();
-   
-	header('Location: login.php'); // Redirects to login.php if the user is not logged in
-    exit(); // It's good practice to call exit() after header to stop further script execution
-}
-$email=$_SESSION["email"];
-$sql = "SELECT u.name FROM tbl_user AS u JOIN tbl_login AS l ON u.user_id = l.user_id WHERE l.email = '$email'";
+// Create a Google Client object
 
-$result=$conn->query($sql);
-if ($result->num_rows > 0){
-	$row=$result->fetch_assoc();
+$client=new Google\Client;
+$client->setClientId("91981920181-u001cgasvcrtcpblsfev8mhuccle262f.apps.googleusercontent.com");
+$client->setClientSecret("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");
+$client->setRedirectUri("http://localhost/coffeeduplicate/userindex.php");
+$client->addScope('email');
+$client->addScope('profile');
+
+if(!$_SESSION["access_token"]){
+
+
+// Exchange the authorization code for an access token
+if (isset($_GET['code'])) {
+	
+    $token = $client->fetchAccessTokenWithAuthCode($_GET['code']);
+    $_SESSION['access_token'] = $token;
+
+    // Create a Google OAuth2 service
+    $google_oauth = new Google_Service_Oauth2($client);
+
+    // Get user info
+    $user_info = $google_oauth->userinfo->get();
+
+    // Get user details
+    $email = $user_info->email;
+    $name = $user_info->name;
+
+    // Check if the user already exists
+    $stmt = $conn->prepare('SELECT user_id FROM tbl_login WHERE email = ?');
+    $stmt->bind_param('s', $email);
+    $stmt->execute();
+    $stmt->store_result();
+
+    if ($stmt->num_rows == 0) {
+        // Insert the new user into tbl_login
+        $stmt->close();
+		$stmt = $conn->prepare('INSERT INTO tbl_user ( `name`) VALUES (?)');
+            $stmt->bind_param('s', $name);
+        
+        if ($stmt->execute()) {
+            // Get the last inserted user_id
+            $user_id = $conn->insert_id;
+
+            // Insert into tbl_user
+            $stmt->close();
+            $stmt = $conn->prepare('INSERT INTO tbl_login (user_id,email) VALUES (?,?)');
+        $stmt->bind_param('is', $user_id,$email);
+            $stmt->execute();
+        }
+    } else {
+        $stmt->bind_result($user_id);
+        $stmt->fetch();
+    }
+    $stmt->close();
+
+    // Set session variables
+    $_SESSION["email"] = $email;
+
+    // Fetch user role
+    $stmt = $conn->prepare("SELECT user_id, role FROM tbl_login WHERE email = ?");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $_SESSION["username"] = $row['role'];
+        $_SESSION["user_id"] = $row["user_id"];
+    } else {
+        $_SESSION["username"] = null;
+    }
+
+    $stmt->close();
 }
+}
+// If the user is not logged in, destroy the session and redirect
+if (!isset($_SESSION['username']) || $_SESSION['username'] != "user") {
+    session_unset(); // Unset all session variables
+    session_destroy(); // Destroy the session
+    header('Location: login.php');
+    exit(); // Stop further execution
+}
+
+$email = $_SESSION["email"];
+
+// Fetch user name
+$stmt = $conn->prepare("SELECT u.name AS name FROM tbl_user u 
+                        JOIN tbl_login l ON u.user_id = l.user_id 
+                        WHERE l.email = ?");
+$stmt->bind_param("s", $email);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+	
+}
+
+$stmt->close();
 ?>
 
 <!DOCTYPE html>
@@ -129,7 +212,7 @@ if ($result->num_rows > 0){
                     </div>
                 </li>
                 <li class="nav-item"><a href="contact.php" class="nav-link">Contact</a></li>
-                <li class="nav-item"><a href="booknow.php" class="nav-link">Book Now</a></li>
+               
                 
                 <?php if(isset($_SESSION['username'])){?>
     <li class="nav-item dropdown">

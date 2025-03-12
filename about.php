@@ -71,7 +71,7 @@ if (!empty($_SESSION["email"])) {
 						</div>
 					</li>
 					<li class="nav-item"><a href="contact.php" class="nav-link">Contact</a></li>
-					<li class="nav-item"><a href="booknow.php" class="nav-link">Book Now</a></li>
+					
 
 					<?php if (isset($_SESSION['username']) && $_SESSION['username'] === 'user') { ?>
 

@@ -189,7 +189,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <input type="text" name="service_name" value="<?php echo htmlspecialchars($service['service_name']); ?>" placeholder="Service Name" required>
             
             <!-- Dropdown for categories -->
-            <select name="category_service" required>
+            <select name="category_service" id="category_service"required>
                 <option value="" disabled>Select Category</option>
                 <?php
                 if ($result_categories->num_rows > 0) {
@@ -230,13 +230,25 @@ $(document).ready(function () {
         return /^[A-Za-z\s]+$/.test(value);
     }, "Please enter letters only.");
 
-    jQuery.validator.addMethod('valid_Quantity', function (value, element) {
-        return /^[1-9]\d*$/.test(value);
-    }, "Quantity must be a positive whole number.");
+    
 
     jQuery.validator.addMethod('valid_Price', function (value, element) {
         return /^[+]?\d+(\.\d+)?$/.test(value) && parseFloat(value) >=100;
     }, "Price must be minimum 100.");
+
+    // ✅ Custom validation for maximum price per category
+    jQuery.validator.addMethod('maxPricePerCategory', function (value, element) {
+            var category = $('#category_service').val();
+            var price = parseFloat(value);
+            
+            var maxPrices = {
+                '1': 1200,
+                '2': 20000,
+                '3': 5000,
+               '4': 50000
+            };
+            return price <= (maxPrices[category] || Infinity); // Default to no limit if category not found
+        }, "Price exceeds the maximum allowed for the selected category.");
 
     jQuery.validator.addMethod('serviceImage', function (value, element) {
         // Allow form submission if no new image is uploaded (use existing image)
@@ -270,13 +282,11 @@ $(document).ready(function () {
                 required: true,
                 minlength: 10
             },
-            quantity: {
-                required: true,
-                valid_Quantity: true
-            },
+           
             service_price: {
                 required: true,
-                valid_Price: true
+                valid_Price: true,
+                maxPricePerCategory: true
             },
             service_image: {
                 serviceImage: true // Custom image validation
@@ -295,13 +305,11 @@ $(document).ready(function () {
                 required: "Please enter a description",
                 minlength: "Description should be at least 10 characters long"
             },
-            quantity: {
-                required: "Please enter a quantity",
-                valid_Quantity: "Quantity must be a whole number greater than 0"
-            },
+           
             service_price: {
-                required: "Please enter the price",
-                valid_Price: "Price must be minimum 100"
+                required: "Price must be entered",
+                valid_Price: "Price should be minimum 100",
+                maxPricePerCategory: "Price exceeds the maximum allowed for the selected category."
             },
             service_image: {
                 serviceImage: "Only image files (PNG, JPG, JPEG, or SVG) are allowed."

@@ -170,9 +170,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="form-container">
             <h5>Add New Service</h5>
             <form method="post" id="service_form"action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" enctype="multipart/form-data">
-                <input type="text" name="service_name" placeholder="service Name" required>
+                <input type="text" name="service_name" id="service_name"placeholder="service Name" required>
                 <!-- Dropdown for categories -->
-        <select name="category_service" required>
+        <select name="category_service" id="category_service"required>
             <option value="" disabled selected>Select Category</option>
             <?php
            
@@ -191,7 +191,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             ?>
         </select>
                 <textarea name="service_description" placeholder="Description" rows="4" required></textarea>
-                <input type="number" name="service_price" placeholder="price" required>
+                <input type="number" name="service_price" id="category_service"placeholder="price" required>
                 <div class="preview">
          <!-- Image preview -->
     <img id="image_preview" src="#" alt="Image Preview" style="display: none; max-width: 200px; margin-top: 10px;">
@@ -224,84 +224,102 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-<script>
+    <script>
     $(document).ready(function () {
-    // Custom validation methods
-    jQuery.validator.addMethod('lettersonly', function (value, element) {
-        return /^[^-\s][a-zA-Z_\s-]+$/.test(value);
-    }, "Please use letters only.");
+        // Custom validation methods
+        jQuery.validator.addMethod('lettersonly', function (value, element) {
+            return /^[^-\s][a-zA-Z_\s-]+$/.test(value);
+        }, "Please use letters only.");
 
-    
+        jQuery.validator.addMethod('valid_Price', function (value, element) {
+            return /^[+]?(?:\d+|\d{1,3}(?:,\d{3})+)(?:\.\d+)?$/.test(value) && parseFloat(value) >= 100;
+        }, "Price should be minimum 100");
 
-    jQuery.validator.addMethod('valid_Price', function (value, element) {
-    return /^[+]?(?:\d+|\d{1,3}(?:,\d{3})+)(?:\.\d+)?$/.test(value) && parseFloat(value) >= 100;
-}, "Price should be minimum 100");
+        jQuery.validator.addMethod('serviceImage', function (value, element, param) {
+            var extension = value.substring(value.lastIndexOf('.') + 1).toLowerCase();
+            return extension === 'png' || extension === 'jpg' || extension === 'jpeg' || extension === 'svg';
+        }, "Please select a valid image file (PNG, JPG, JPEG, or SVG).");
 
-jQuery.validator.addMethod('serviceImage', function(value, element, param) {
-        var extension = value.substring(value.lastIndexOf('.') + 1).toLowerCase();
-        return extension === 'png' || extension === 'jpg' || extension === 'jpeg' || extension === 'svg';
-    }),
-    
-    
-    // Form validation rules and messages
-    $('#service_form').validate({
-        rules: {
-            service_name: {
-                required: true,
-                lettersonly: true,
-                minlength: 3
-            },
-            category_service: {
-                required: true
-                
-            },
-            service_description: {
-                required: true
-                
-                
-            },
-            service_price: {
-                required: true,
-                valid_Price:true
-                
-            },
-            service_image:{
-                required:true,
-                serviceImage:true
+        // ✅ Custom validation for maximum price per category
+        jQuery.validator.addMethod('maxPricePerCategory', function (value, element) {
+            var category = $('#category_service').val();
+            var price = parseFloat(value);
+            var maxPrices = {
+                '1': 1200,
+                '2': 20000,
+                '3': 5000,
+               '4': 50000
+            };
+            return price <= (maxPrices[category] || Infinity); // Default to no limit if category not found
+        }, "Price exceeds the maximum allowed for the selected category.");
 
+        // 💡 Form validation rules and messages
+        $('#service_form').validate({
+            rules: {
+                service_name: {
+                    required: true,
+                    lettersonly: true,
+                    minlength: 3,
+                    remote: {     //built in function in jquery  
+                    url: "check_service.php", 
+                    type: "POST",
+                    data: {
+                        username: function() {  // input for check_email.php 
+                            return $("#service_name").val();
+                        }
+                    }
+                }
+                },
+                category_service: {
+                    required: true
+                },
+                service_description: {
+                    required: true
+                },
+                service_price: {
+                    required: true,
+                    valid_Price: true,
+                    maxPricePerCategory: true
+                },
+                service_image: {
+                    required: true,
+                    serviceImage: true
+                }
+            },
+            messages: {
+                service_name: {
+                    required: "Please enter your full name",
+                    lettersonly: "Name must be in alphabets only",
+                    remote:"Service already exist !"
+                },
+                category_service: {
+                    required: "Please select a category"
+                },
+                service_description: {
+                    required: "Service description is required"
+                },
+                service_price: {
+                    required: "Price must be entered",
+                    valid_Price: "Price should be minimum 100",
+                    maxPricePerCategory: "Price exceeds the maximum allowed for the selected category."
+                },
+                service_image: {
+                    required: "Please upload service image",
+                    serviceImage: "Please select a valid image file (PNG, JPG, JPEG, or SVG)."
+                }
+            },
+            errorPlacement: function (error, element) {
+                error.insertAfter(element); // Places error messages after the input field
             }
-            
-        },
-        messages: {
-            service_name: {
-                required: "Please enter your full name",
-                lettersonly: "Name must be in alphabets only"
-            },
-            category_service: {
-                required: "Please select a category"
-            },   
-            service_description: {
-                required: "Service description is required"
-                
-            },
-            service_price: {
-                required: "Price must be entered",
-                valid_Price:"Price should be minimum 100"
-                
-            },
-            service_image:{
-                required:"please upload service image",
-                serviceImage:"Please select a valid image file (PNG, JPG, JPEG, or SVG)."
+        });
 
-            }
-           
-        },
-        errorPlacement: function (error, element) {
-            error.insertAfter(element); // Places error messages after the input field
-        }
+        // 🔄 Revalidate price field when category changes
+        $('#category_service').change(function () {
+            $('#service_price').valid();
+        });
     });
-});
 </script>
+
 </body>
 
 </html>

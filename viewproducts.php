@@ -155,7 +155,7 @@ $result = $conn->query($sql);
             <li><a href="admindashboard.php">Dashboard</a></li>
             <li><a href="viewservices.php">Services</a></li>
             <li><a href="viewproducts.php">Products</a></li>
-            <li><a href="viewappointments.php">Appointments</a></li>
+            <li><a href="manage_appointment.php">Appointments</a></li>
             <li><a href="viewuser.php">Users</a></li>
             <li><a href="logout.php">Logout</a></li>
         </ul>

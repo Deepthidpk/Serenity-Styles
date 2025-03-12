@@ -1,7 +1,6 @@
 <?php
-
-require 'connect.php'; // Database connection
-
+include('connect.php');
+$sql="SELECT * FROM tbl_cart WHERE status='Active'";
 // Check if user is logged in
 if (!isset($_SESSION["user_id"])) {
     echo "Please log in to view your cart.";
@@ -10,36 +9,82 @@ if (!isset($_SESSION["user_id"])) {
 
 $user_id = $_SESSION["user_id"];
 
-// Fetch cart items from the database
+// Fetch cart items for the logged-in user
 $stmt = $conn->prepare("
-    SELECT c.cart_id, p.product_name, p.price, c.quantity, p.quantity AS qty,p.product_image, (p.price * c.quantity) AS total_price 
+    SELECT c.cart_id, p.product_name, p.price, c.quantity, (p.price * c.quantity) AS total_price 
     FROM tbl_cart c
     JOIN tbl_products p ON c.product_id = p.product_id
-    WHERE c.status='Active' AND c.user_id = ?
+    WHERE c.user_id = ?
 ");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
-// Calculate subtotal
-$subtotal = 0;
-$cart_items = [];
-while ($row = $result->fetch_assoc()) {
-    $subtotal += $row['total_price'];
-    $cart_items[] = $row;
-}
-
-$stmt->close();
-$conn->close();
-
-$delivery_fee = 0.00;
-$total = $subtotal + $delivery_fee;
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Shopping Cart</h2>
+
+<?php if ($result->num_rows > 0): ?>
+    <table>
+        <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total Price</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php while ($row = $result->fetch_assoc()): ?>
+                <tr>
+                    <td><?php echo htmlspecialchars($row['product_name']); ?></td>
+                    <td>$<?php echo number_format($row['price'], 2); ?></td>
+                    <td><?php echo $row['quantity']; ?></td>
+                    <td>$<?php echo number_format($row['total_price'], 2); ?></td>
+                    <td>
+                        <a href="remove_cart.php?cart_id=<?php echo $row['cart_id']; ?>">Remove</a>
+                    </td>
+                </tr>
+            <?php endwhile; ?>
+        </tbody>
+    </table>
+<?php else: ?>
+    <p>Your cart is empty.</p>
+<?php endif; ?>
+
+<?php 
+$stmt->close();
+$conn->close();
+?>
+?>
+<!DOCTYPE html>
+<html lang="en">
   <head>
-    <title>Cart</title>
+    <title></title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     
@@ -49,13 +94,19 @@ $total = $subtotal + $delivery_fee;
 
     <link rel="stylesheet" href="css/open-iconic-bootstrap.min.css">
     <link rel="stylesheet" href="css/animate.css">
+    
     <link rel="stylesheet" href="css/owl.carousel.min.css">
     <link rel="stylesheet" href="css/owl.theme.default.min.css">
     <link rel="stylesheet" href="css/magnific-popup.css">
+
     <link rel="stylesheet" href="css/aos.css">
+
     <link rel="stylesheet" href="css/ionicons.min.css">
+
     <link rel="stylesheet" href="css/bootstrap-datepicker.css">
     <link rel="stylesheet" href="css/jquery.timepicker.css">
+
+    
     <link rel="stylesheet" href="css/flaticon.css">
     <link rel="stylesheet" href="css/icomoon.css">
     <link rel="stylesheet" href="css/style.css">
@@ -64,25 +115,31 @@ $total = $subtotal + $delivery_fee;
   	<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
 	    <div class="container">
 	      <a class="navbar-brand" href="userindex.php">Beauty<small>Blend</small></a>
-	      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav">
+	      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
 	        <span class="oi oi-menu"></span> Menu
 	      </button>
 	      <div class="collapse navbar-collapse" id="ftco-nav">
 	        <ul class="navbar-nav ml-auto">
 	          <li class="nav-item"><a href="index.php" class="nav-link">Home</a></li>
-	          <li class="nav-item"><a href="services.php" class="nav-link">Services</a></li>
+	          
+	         
+
+			  <li class="nav-item"><a href="services.php" class="nav-link">Services</a></li>
+			  
+	         
 	          <li class="nav-item"><a href="about.php" class="nav-link">About</a></li>
 	          <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="shop.php" id="dropdown04" data-toggle="dropdown">Products</a>
-              <div class="dropdown-menu">
+              <a class="nav-link dropdown-toggle" href="shop.php" id="dropdown04" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Products</a>
+              <div class="dropdown-menu" aria-labelledby="dropdown04">
               	<a class="dropdown-item" href="shop.php">Products</a>
+                <a class="dropdown-item" href="product-single.php">Single Product</a>
                 <a class="dropdown-item" href="cart.php">Cart</a>
                 <a class="dropdown-item" href="checkout.php">Checkout</a>
               </div>
             </li>
 	          <li class="nav-item"><a href="contact.php" class="nav-link">Contact</a></li>
-			  
-	          <li class="nav-item cart"><a href="cart.php" class="nav-link"><span class="icon icon-shopping_cart"></span><span class="bag d-flex justify-content-center align-items-center"><small><?= count($cart_items) ?></small></span></a></li>
+			  <li class="nav-item"><a href="booknow.php" class="nav-link">Book Now</a></li>
+	          <li class="nav-item cart"><a href="cart.php" class="nav-link"><span class="icon icon-shopping_cart"></span><span class="bag d-flex justify-content-center align-items-center"><small>1</small></span></a></li>
 	        </ul>
 	      </div>
 		  </div>
@@ -90,19 +147,22 @@ $total = $subtotal + $delivery_fee;
     <!-- END nav -->
 
     <section class="home-slider owl-carousel">
+
       <div class="slider-item" style="background-image: url(images/coverpage1.jpg);" data-stellar-background-ratio="0.5">
       	<div class="overlay"></div>
         <div class="container">
           <div class="row slider-text justify-content-center align-items-center">
+
             <div class="col-md-7 col-sm-12 text-center ftco-animate">
             	<h1 class="mb-3 mt-5 bread">Cart</h1>
 	            <p class="breadcrumbs"><span class="mr-2"><a href="index.php">Home</a></span> <span>Cart</span></p>
             </div>
+
           </div>
         </div>
       </div>
     </section>
-
+		
 		<section class="ftco-section ftco-cart">
 			<div class="container">
 				<div class="row">
@@ -120,64 +180,47 @@ $total = $subtotal + $delivery_fee;
 						      </tr>
 						    </thead>
 						    <tbody>
-                <?php if (count($cart_items) > 0): ?>
-    <?php foreach ($cart_items as $item): ?>
-        <?php
-           
-            $available_stock = $item['qty']; // Available stock from database
-            
-        ?>
+						      <tr class="text-center">
+						        <td class="product-remove"><a href="#"><span class="icon-close"></span></a></td>
+						        
+						        <td class="image-prod"><div class="img" style="background-image:url(images/lorealfound1.jpg);"></div></td>
+						        
+						        <td class="product-name">
+						        	<h3>Loreal Infallible Foundation</h3>
+						        	
+						        </td>
+						        
+						        <td class="price">$4.90</td>
+						        
+						        <td class="quantity">
+						        	<div class="input-group mb-3">
+					             	<input type="text" name="quantity" class="quantity form-control input-number" value="1" min="1" max="100">
+					          	</div>
+					          </td>
+						        
+						        <td class="total">$4.90</td>
+						      </tr><!-- END TR-->
 
-        <tr class="text-center">
-            <td class="product-remove">
-                <form method="POST" action="remove_cart.php">
-                    <input type="hidden" name="cart_id" value="<?= $item['cart_id']; ?>">
-                    <input type="hidden" name="user_id" value="<?= $_SESSION['user_id']; ?>">
-                    <button type="submit" style="border: none; background: none;">
-                        <span class="icon-close"></span>
-                    </button>
-                </form>
-            </td>
-
-            <td class="image-prod">
-                <div class="img" style="background-image:url(<?= htmlspecialchars($item['product_image']); ?>);"></div>
-            </td>
-
-            <td class="product-name">
-                <h3><?= htmlspecialchars($item['product_name']); ?></h3>
-            </td>
-
-            <td class="price">Rs.<?= number_format($item['price'], 2); ?></td>
-
-            <td class="quantity">
-                <form method="POST" action="update_cart.php" style="display: flex; align-items: center;">
-                    <input type="hidden" name="cart_id" value="<?= $item['cart_id']; ?>">
-                    <input type="hidden" name="user_id" value="<?= $_SESSION['user_id']; ?>">
-
-                    <!-- Decrease Button -->
-                    <button type="submit" name="action" value="decrease" style="border: none; background: none; font-size: 18px;">➖</button>
-
-                    <input type="text" name="quantity" class="quantity form-control input-number" 
-                        value="<?= $item['quantity']; ?>" min="1" max="<?= $available_stock; ?>" readonly 
-                        style="width: 40px; text-align: center; border: none; background: transparent;">
-
-                    <!-- Increase Button: Disabled if quantity >= available stock -->
-                    <button type="submit" name="action" value="increase" 
-                        style="border: none; background: none; font-size: 18px;" 
-                        <?= ($item['quantity'] >= $available_stock) ? 'disabled' : ''; ?>>➕</button>
-                </form>
-            </td>
-
-            <td class="total">Rs.<?= number_format($item['total_price'], 2); ?></td>
-        </tr>
-    <?php endforeach; ?>
-
-
-
-
-						    <?php else: ?>
-						      <tr><td colspan="6" class="text-center">Your cart is empty.</td></tr>
-						    <?php endif; ?>
+						      <tr class="text-center">
+						        <td class="product-remove"><a href="#"><span class="icon-close"></span></a></td>
+						        
+						        <td class="image-prod"><div class="img" style="background-image:url(images/niveafacewash2.jpg);"></div></td>
+						        
+						        <td class="product-name">
+						        	<h3>Nivea Facewash</h3>
+						        	
+						        </td>
+						        
+						        <td class="price">$15.70</td>
+						        
+						        <td class="quantity">
+						        	<div class="input-group mb-3">
+					             	<input type="text" name="quantity" class="quantity form-control input-number" value="1" min="1" max="100">
+					          	</div>
+					          </td>
+						        
+						        <td class="total">$15.70</td>
+						      </tr><!-- END TR-->
 						    </tbody>
 						  </table>
 					  </div>
@@ -187,17 +230,29 @@ $total = $subtotal + $delivery_fee;
     			<div class="col col-lg-3 col-md-6 mt-5 cart-wrap ftco-animate">
     				<div class="cart-total mb-3">
     					<h3>Cart Totals</h3>
-    					<p class="d-flex"><span>Subtotal</span><span>Rs.<?= number_format($subtotal, 2); ?></span></p>
-    					<p class="d-flex"><span>Delivery</span><span>Rs.<?= number_format($delivery_fee, 2); ?></span></p>
+    					<p class="d-flex">
+    						<span>Subtotal</span>
+    						<span>$20.60</span>
+    					</p>
+    					<p class="d-flex">
+    						<span>Delivery</span>
+    						<span>$0.00</span>
+    					</p>
+    					
     					<hr>
-    					<p class="d-flex total-price"><span>Total</span><span>Rs.<?= number_format($total, 2); ?></span></p>
+    					<p class="d-flex total-price">
+    						<span>Total</span>
+    						<span>$17.60</span>
+    					</p>
     				</div>
-    				<p class="text-center"><a href="checkout.php" class="btn btn-primary py-3 px-4">Proceed to Checkout</a></p>
+    				<p class="text-center"><a href="checkout.html" class="btn btn-primary py-3 px-4">Proceed to Checkout</a></p>
     			</div>
     		</div>
 			</div>
 		</section>
-		<footer class="ftco-footer ftco-section img">
+
+   
+    <footer class="ftco-footer ftco-section img">
     	<div class="overlay"></div>
       <div class="container">
         <div class="row mb-5">

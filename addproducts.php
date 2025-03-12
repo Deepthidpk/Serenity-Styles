@@ -178,7 +178,7 @@ if ($conn->query($sql) === TRUE) {
         <div class="form-container">
     <h5>Add New Product</h5>
     <form method="post" id="product_form" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" enctype="multipart/form-data">
-    <input type="text" name="product_name" placeholder="Product Name" required>
+    <input type="text" name="product_name" id="product_name"placeholder="Product Name" required>
     
     <!-- Dropdown for categories -->
     <select name="category" required>
@@ -197,7 +197,7 @@ if ($conn->query($sql) === TRUE) {
     
     <textarea name="pro_description" placeholder="Description" rows="4" required></textarea>
     <input type="number" name="quantity" placeholder="Quantity" required>
-    <input type="number" name="price" placeholder="Price" step="0.01" required>
+    <input type="number" name="price" id="product_price"placeholder="Price" step="0.01" required>
     <div class="preview">
          <!-- Image preview -->
     <img id="image_preview" src="#" alt="Image Preview" style="display: none; max-width: 200px; margin-top: 10px;">
@@ -245,8 +245,12 @@ if ($conn->query($sql) === TRUE) {
 }, "Quantity should be a positive whole number greater than 0");
 
     jQuery.validator.addMethod('valid_Productprice', function (value, element) {
-    return /^[+]?(?:\d+|\d{1,3}(?:,\d{3})+)(?:\.\d+)?$/.test(value) && parseFloat(value) >=100;
+    return parseFloat(value) >=100;
 }, "Price should be minimum 100");
+
+jQuery.validator.addMethod('valid_Productmaxprice', function (value, element) {
+    return parseFloat(value) <10000;
+}, "Price should be maximum 10000");
 
 jQuery.validator.addMethod('productImage', function(value, element, param) {
         var extension = value.substring(value.lastIndexOf('.') + 1).toLowerCase();
@@ -259,7 +263,16 @@ jQuery.validator.addMethod('productImage', function(value, element, param) {
             product_name: {
                 required: true,
                 lettersonly: true,
-                minlength: 3
+                minlength: 3,
+                remote: {     //built in function in jquery  
+                    url: "check_product.php", 
+                    type: "POST",
+                    data: {
+                        username: function() {  // input for check_email.php 
+                            return $("#product_name").val();
+                        }
+                    }
+                }
             },
             category: {
                 required: true
@@ -276,7 +289,11 @@ jQuery.validator.addMethod('productImage', function(value, element, param) {
         },
             price: {
                 required: true,
-                valid_Productprice:true
+                number:true,
+                valid_Productprice:true,
+                valid_Productmaxprice:true
+
+
                 
             },
             product_image:{
@@ -289,7 +306,8 @@ jQuery.validator.addMethod('productImage', function(value, element, param) {
         messages: {
             product_name: {
                 required: "Please enter your full name",
-                lettersonly: "Name must be in alphabets only"
+                lettersonly: "Name must be in alphabets only",
+                remote:"Product already exists !"
             },
             category: {
                 required: "Please select a category"
@@ -304,7 +322,10 @@ jQuery.validator.addMethod('productImage', function(value, element, param) {
         },
             price: {
                 required: "Price must be entered",
-                valid_Price:"Price should be minimum 100"
+                number:"Enter a valid price",
+                valid_Productprice:"Price should be minimum 100",
+                valid_Productmaxprice:"Price should be maximum 10000"
+
                 
             },
             product_image:{
@@ -318,6 +339,9 @@ jQuery.validator.addMethod('productImage', function(value, element, param) {
             error.insertAfter(element); // Places error messages after the input field
         }
     });
+    $('#product_price').change(function () {
+            $('#product_price').valid();
+        });
 });
 </script>
 </body>

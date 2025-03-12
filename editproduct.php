@@ -239,6 +239,10 @@ $(document).ready(function () {
     jQuery.validator.addMethod('valid_Price', function (value, element) {
         return /^[+]?\d+(\.\d+)?$/.test(value) && parseFloat(value) > 0;
     }, "Price must be greater than 0.");
+    
+    jQuery.validator.addMethod('valid_Productmaxprice', function (value, element) {
+    return parseFloat(value) <10000;
+}, "Price should be maximum 10000");
 
     jQuery.validator.addMethod('productImage', function (value, element) {
         // Allow form submission if no new image is uploaded (use existing image)
@@ -278,7 +282,11 @@ $(document).ready(function () {
             },
             price: {
                 required: true,
-                valid_Price: true
+                number:true,
+                valid_Price:true,
+                valid_Productmaxprice:true
+
+
             },
             product_image: {
                 productImage: true // Custom image validation
@@ -302,8 +310,11 @@ $(document).ready(function () {
                 valid_Quantity: "Quantity must be a whole number greater than 0"
             },
             price: {
-                required: "Please enter the price",
-                valid_Price: "Price must be a positive number"
+                required: "Price must be entered",
+                number:"Enter a valid price",
+                valid_Price:"Price should be minimum 100",
+                valid_Productmaxprice:"Price should be maximum 10000"
+
             },
             product_image: {
                 productImage: "Only image files (PNG, JPG, JPEG, or SVG) are allowed."

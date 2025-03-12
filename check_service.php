@@ -1,9 +1,9 @@
 <?php
 require("connect.php");
 
-if(isset($_POST['email'])) {
-    $email = $_POST['email'];
-    $sql = "SELECT * FROM tbl_login WHERE status='Active' AND email = '$email'";
+if(isset($_POST['service_name'])) {
+    $service_name = $_POST['service_name'];
+    $sql = "SELECT * FROM tbl_services WHERE status='active' AND service_name = '$service_name'";
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {

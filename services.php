@@ -124,7 +124,7 @@ if (!empty($_SESSION["email"])) {
             </div>
           </li>
           <li class="nav-item"><a href="contact.php" class="nav-link">Contact</a></li>
-          <li class="nav-item"><a href="booknow.php" class="nav-link">Book Now</a></li>
+          
 
           <?php if (isset($_SESSION['username']) && $_SESSION['username'] === 'user') { ?>
 
@@ -228,18 +228,31 @@ if (!empty($_SESSION["email"])) {
                         $service_image = htmlspecialchars($row['service_image']); // Assuming image URL is stored in DB
                     
                         // Generate the dynamic service card
-                        echo '
-        <div class="col-md-3">
-            <div class="menu-entry">
-                <a href="service-details.php?id=' . $service_id . '" class="img" style="background-image: url(' . $service_image . ');"></a>
-                <div class="text text-center pt-4">
-                    <h3><a href="service-details.php?id=' . $service_id . '">' . $service_name . '</a></h3>
-                    <p>' . $service_description . '</p>
-                    <p class="price"><span>Rs.' . $service_price . '</span></p>
-                    <p><a href="booknow.php?service_id=' . $service_id . '" class="btn btn-primary btn-outline-primary">Book Appointment</a></p>
-                </div>
-            </div>
-        </div>';
+                        // Generate the dynamic service card
+echo '
+<div class="col-md-3">
+    <div class="menu-entry">
+        <a href="service-details.php?id=' . htmlspecialchars($service_id) . '" class="img" 
+           style="background-image: url(' . htmlspecialchars($service_image) . ');"></a>
+        <div class="text text-center pt-4">
+            <h3>
+                <a href="service-details.php?id=' . htmlspecialchars($service_id) . '">
+                    ' . htmlspecialchars($service_name) . '
+                </a>
+            </h3>
+            <p>' . htmlspecialchars($service_description) . '</p>
+            <p class="price"><span>Rs. ' . number_format($service_price, 2) . '</span></p>
+            
+            <!-- Booking Form (POST Method) -->
+            <form action="booknow.php" method="GET">
+                <input type="hidden" name="service_id" value="' . htmlspecialchars($service_id) . '">
+                <input type="hidden" name="user_id" value="' . (isset($_SESSION['user_id']) ? htmlspecialchars($_SESSION['user_id']) : '') . '"> 
+                <button type="submit" class="btn btn-primary btn-outline-primary">Book Appointment</button>
+            </form>
+        </div>
+    </div>
+</div>';
+
                       }
                     } else {
                       echo "<p>No services available.</p>";
@@ -279,6 +292,12 @@ if (!empty($_SESSION["email"])) {
                     <p>' . $service_description . '</p>
                     <p class="price"><span>Rs.' . $service_price . '</span></p>
                     <p><a href="booknow.php?service_id=' . $service_id . '" class="btn btn-primary btn-outline-primary">Book Appointment</a></p>
+                     <!-- Booking Form (POST Method) -->
+            <form action="booknow.php" method="GET">
+                <input type="hidden" name="service_id" value="' . htmlspecialchars($service_id) . '">
+                <input type="hidden" name="user_id" value="' . (isset($_SESSION['user_id']) ? htmlspecialchars($_SESSION['user_id']) : '') . '"> 
+                <button type="submit" class="btn btn-primary btn-outline-primary">Book Appointment</button>
+            </form>
                 </div>
             </div>
         </div>';
@@ -320,6 +339,12 @@ if (!empty($_SESSION["email"])) {
                     <p>' . $service_description . '</p>
                     <p class="price"><span>Rs.' . $service_price . '</span></p>
                     <p><a href="booknow.php?service_id=' . $service_id . '" class="btn btn-primary btn-outline-primary">Book Appointment</a></p>
+                     <!-- Booking Form (POST Method) -->
+            <form action="booknow.php" method="GET">
+                <input type="hidden" name="service_id" value="' . htmlspecialchars($service_id) . '">
+                <input type="hidden" name="user_id" value="' . (isset($_SESSION['user_id']) ? htmlspecialchars($_SESSION['user_id']) : '') . '"> 
+                <button type="submit" class="btn btn-primary btn-outline-primary">Book Appointment</button>
+            </form>
                 </div>
             </div>
         </div>';
@@ -361,6 +386,12 @@ if (!empty($_SESSION["email"])) {
                     <p>' . $service_description . '</p>
                     <p class="price"><span>Rs.' . $service_price . '</span></p>
                     <p><a href="booknow.php?service_id=' . $service_id . '" class="btn btn-primary btn-outline-primary">Book Appointment</a></p>
+                     <!-- Booking Form (POST Method) -->
+            <form action="booknow.php" method="GET">
+                <input type="hidden" name="service_id" value="' . htmlspecialchars($service_id) . '">
+                <input type="hidden" name="user_id" value="' . (isset($_SESSION['user_id']) ? htmlspecialchars($_SESSION['user_id']) : '') . '"> 
+                <button type="submit" class="btn btn-primary btn-outline-primary">Book Appointment</button>
+            </form>
                 </div>
             </div>
         </div>';

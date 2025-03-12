@@ -1,4 +1,13 @@
 <?php
+require __DIR__ . "/vendor/autoload.php";
+$client=new Google\Client;
+$client->setClientId("91981920181-u001cgasvcrtcpblsfev8mhuccle262f.apps.googleusercontent.com");
+$client->setClientSecret("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");
+$client->setRedirectUri("http://localhost/coffeeduplicate/userindex.php");
+$client->addScope("email");
+$client->addScope("profile");
+$url=$client->createAuthUrl();
+
 
 include 'connect.php';
 
@@ -99,6 +108,7 @@ $error_message = "No active user found with this email!";
           <div class="heading-section text-center mb-5">
             <span class="subheading">Login Now</span>
           </div>
+
           <form action="" method="POST" class="appointment-form">
             <div class="form-group">
               <input type="email" name="email" class="form-control" placeholder="Your Email">
@@ -120,9 +130,12 @@ $error_message = "No active user found with this email!";
             </div>
             <div class="text-center mt-4">
               <p>Don't have an account? <a href="register.php" class="text-primary">Register here</a></p>
+              <a href="<?= $url?>">Sign in with Google</a>
             </div>
           </form>
+
         </div>
+        
       </div>
     </div>
   </section>
