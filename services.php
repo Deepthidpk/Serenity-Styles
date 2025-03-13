@@ -124,7 +124,8 @@ if (!empty($_SESSION["email"])) {
             </div>
           </li>
           <li class="nav-item"><a href="contact.php" class="nav-link">Contact</a></li>
-          
+          <li class="nav-item"><a href="booknow.php" class="nav-link">Book Now</a></li>
+				<li class="nav-item"><a href="review.php" class="nav-link">Review</a></li>
 
           <?php if (isset($_SESSION['username']) && $_SESSION['username'] === 'user') { ?>
 
@@ -175,7 +176,7 @@ if (!empty($_SESSION["email"])) {
 
           <div class="col-md-7 col-sm-12 text-center ftco-animate">
             <h1 class="mb-3 mt-5 bread">Our Services</h1>
-            <p class="breadcrumbs"><span class="mr-2"><a href="index.php">Home</a></span> <span>Products</span></p>
+            <p class="breadcrumbs"><span class="mr-2"><a href="userindex.php">Home</a></span> <span>Products</span></p>
           </div>
 
         </div>
@@ -291,8 +292,7 @@ echo '
                     <h3><a href="service-details.php?id=' . $service_id . '">' . $service_name . '</a></h3>
                     <p>' . $service_description . '</p>
                     <p class="price"><span>Rs.' . $service_price . '</span></p>
-                    <p><a href="booknow.php?service_id=' . $service_id . '" class="btn btn-primary btn-outline-primary">Book Appointment</a></p>
-                     <!-- Booking Form (POST Method) -->
+                     <!-- Booking Form (GET Method) -->
             <form action="booknow.php" method="GET">
                 <input type="hidden" name="service_id" value="' . htmlspecialchars($service_id) . '">
                 <input type="hidden" name="user_id" value="' . (isset($_SESSION['user_id']) ? htmlspecialchars($_SESSION['user_id']) : '') . '"> 
@@ -338,8 +338,7 @@ echo '
                     <h3><a href="service-details.php?id=' . $service_id . '">' . $service_name . '</a></h3>
                     <p>' . $service_description . '</p>
                     <p class="price"><span>Rs.' . $service_price . '</span></p>
-                    <p><a href="booknow.php?service_id=' . $service_id . '" class="btn btn-primary btn-outline-primary">Book Appointment</a></p>
-                     <!-- Booking Form (POST Method) -->
+                     <!-- Booking Form (GET Method) -->
             <form action="booknow.php" method="GET">
                 <input type="hidden" name="service_id" value="' . htmlspecialchars($service_id) . '">
                 <input type="hidden" name="user_id" value="' . (isset($_SESSION['user_id']) ? htmlspecialchars($_SESSION['user_id']) : '') . '"> 
@@ -385,8 +384,8 @@ echo '
                     <h3><a href="service-details.php?id=' . $service_id . '">' . $service_name . '</a></h3>
                     <p>' . $service_description . '</p>
                     <p class="price"><span>Rs.' . $service_price . '</span></p>
-                    <p><a href="booknow.php?service_id=' . $service_id . '" class="btn btn-primary btn-outline-primary">Book Appointment</a></p>
-                     <!-- Booking Form (POST Method) -->
+                    
+                     <!-- Booking Form (GET Method) -->
             <form action="booknow.php" method="GET">
                 <input type="hidden" name="service_id" value="' . htmlspecialchars($service_id) . '">
                 <input type="hidden" name="user_id" value="' . (isset($_SESSION['user_id']) ? htmlspecialchars($_SESSION['user_id']) : '') . '"> 

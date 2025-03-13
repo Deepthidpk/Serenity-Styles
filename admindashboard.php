@@ -31,11 +31,11 @@ $serviceResult = mysqli_query($conn, $serviceQuery);
 $serviceRow = mysqli_fetch_assoc($serviceResult);
 $totalServices = $serviceRow['total_services'];
 
-// Fetch total appointments
-// $appointmentQuery = "SELECT COUNT(*) AS total_appointments FROM tbl_appointments";
-// $appointmentResult = mysqli_query($conn, $appointmentQuery);
-// $appointmentRow = mysqli_fetch_assoc($appointmentResult);
-// $totalAppointments = $appointmentRow['total_appointments'];
+//Fetch total appointments
+$appointmentQuery = "SELECT COUNT(*) AS total_appointments FROM tbl_appointment WHERE status='Approved'";
+$appointmentResult = mysqli_query($conn, $appointmentQuery);
+$appointmentRow = mysqli_fetch_assoc($appointmentResult);
+$totalAppointments = $appointmentRow['total_appointments'];
 ?>
 
 <!DOCTYPE html>
@@ -182,6 +182,7 @@ $totalServices = $serviceRow['total_services'];
                 <li><a href="viewproducts.php">Products</a></li>
                 <li><a href="manage_appointment.php">Appointments</a></li>
                 <li><a href="viewuser.php">Users</a></li>
+                <li><a href="viewreview.php">Reviews</a></li>
                 <li><a href="logout.php">Logout</a></li>
             </ul>
         </div>
@@ -207,7 +208,7 @@ $totalServices = $serviceRow['total_services'];
                 </div>
                 <div class="card">
                     <h3>Total Appointments</h3>
-                    <!-- <p><?php echo $totalAppointments; ?></p> -->
+                    <?php echo $totalAppointments; ?></p> 
                 </div>
             </div>
 

@@ -81,6 +81,8 @@ $total = $subtotal + $delivery_fee;
               </div>
             </li>
 	          <li class="nav-item"><a href="contact.php" class="nav-link">Contact</a></li>
+            <li class="nav-item"><a href="booknow.php" class="nav-link">Book Now</a></li>
+            <li class="nav-item"><a href="review.php" class="nav-link">Reviews</a></li>
 			  
 	          <li class="nav-item cart"><a href="cart.php" class="nav-link"><span class="icon icon-shopping_cart"></span><span class="bag d-flex justify-content-center align-items-center"><small><?= count($cart_items) ?></small></span></a></li>
 	        </ul>

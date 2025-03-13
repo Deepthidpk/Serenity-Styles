@@ -49,8 +49,10 @@ if (isset($_GET['code'])) {
 
             // Insert into tbl_user
             $stmt->close();
-            $stmt = $conn->prepare('INSERT INTO tbl_login (user_id,email) VALUES (?,?)');
-        $stmt->bind_param('is', $user_id,$email);
+			$stmt = $conn->prepare("INSERT INTO tbl_login (user_id, email, status) VALUES (?, ?, ?)");
+			$status = 'Active'; // Define the string separately
+			$stmt->bind_param("iss", $user_id, $email, $status);
+			
             $stmt->execute();
         }
     } else {
@@ -212,7 +214,8 @@ $stmt->close();
                     </div>
                 </li>
                 <li class="nav-item"><a href="contact.php" class="nav-link">Contact</a></li>
-               
+				<li class="nav-item"><a href="booknow.php" class="nav-link">Book Now</a></li>
+				<li class="nav-item"><a href="review_view.php" class="nav-link">Review</a></li>
                 
                 <?php if(isset($_SESSION['username'])){?>
     <li class="nav-item dropdown">
@@ -415,7 +418,7 @@ $stmt->close();
     						<h3><a href="#">Haircut</a></h3>
     						<p>Our skilled stylists craft the perfect cut for a fresh, flattering look that complements your style.</p>
     						<p class="price"><span>$5.90</span></p>
-    						<p><a href="services.html" class="btn btn-primary btn-outline-primary">View Haircut</a></p>
+    						<p><a href="services.php" class="btn btn-primary btn-outline-primary">View Haircut</a></p>
     					</div>
     				</div>
         	</div>

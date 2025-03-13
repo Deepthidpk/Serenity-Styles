@@ -226,6 +226,7 @@ $result = $conn->query($sql);
                 <li><a href="viewproducts.php">Products</a></li>
                 <li><a href="viewappointments.php">Appointments</a></li>
                 <li><a href="viewuser.php">Users</a></li>
+                <li><a href="viewreview.php">Reviews</a></li>
                 <li><a href="logout.php">Logout</a></li>
 
             </ul>
@@ -272,13 +273,19 @@ $result = $conn->query($sql);
 if ($result->num_rows > 0) {
     $i = 1;
     while ($row = $result->fetch_assoc()) {
+        $sql="SELECT service_name  FROM tbl_services WHERE service_id=$row[service_id] AND status='active'";
+        $result1=$conn->query($sql);
+        if($result1->num_rows>0){
+            $col=$result1->fetch_assoc();
+        }
+        
         echo "<tr>
             <td>" . $i . "</td>
             <td>" . htmlspecialchars($row["name"]) . "</td>
             <td>" . htmlspecialchars($row["phone_no"]) . "</td>
             <td>" . htmlspecialchars($row["date"]) . "</td>
             <td>" . htmlspecialchars($row["time"]) . "</td>
-            <td>" . htmlspecialchars($row["service_id"]) . "</td>
+            <td>" . htmlspecialchars($col["service_name"]) . "</td>
             <td>" . htmlspecialchars($row["status"]) . "</td>
             <td>";
         

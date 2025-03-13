@@ -31,7 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
    $phone_no=isset($_POST['phone']) ? intval($_POST['phone']) : null;
     $time = isset($_POST['appointment_time']) ? trim($_POST['appointment_time']) : null;
     $message = isset($_POST['message']) ? htmlspecialchars(trim($_POST['message'])) : null;
-    $status = 'pending';
+    $status = 'Pending';
 
     // Ensure required fields are provided
     // if (!$user_id || !$service_id || !$date || !$time) {
@@ -125,6 +125,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </li>
 	          <li class="nav-item"><a href="contact.php" class="nav-link">Contact</a></li>
 			  <li class="nav-item active"><a href="booknow.php" class="nav-link">Book Now</a></li>
+        <li class="nav-item"><a href="review.php" class="nav-link">Reviews</a></li>
+
 			  <?php if (isset($_SESSION['username']) && $_SESSION['username'] === 'user') { ?>
 
 <li class="nav-item dropdown">
