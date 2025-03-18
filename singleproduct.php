@@ -1,3 +1,11 @@
+<?php
+include('connect.php');
+$product_id=$_POST['product_id'];
+$sql="SELECT * FROM tbl_products WHERE status='available' AND product_id=$product_id";
+$result=$conn->query($sql);
+$row=$result->fetch_assoc();
+echo $product_id;
+?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -31,32 +39,32 @@
   <body>
   	<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
 	    <div class="container">
-	      <a class="navbar-brand" href="index.html">Beauty<small>Blend</small></a>
+	      <a class="navbar-brand" href="userindex.php">Beauty<small>Blend</small></a>
 	      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
 	        <span class="oi oi-menu"></span> Menu
 	      </button>
 	      <div class="collapse navbar-collapse" id="ftco-nav">
 	        <ul class="navbar-nav ml-auto">
-	          <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+	          <li class="nav-item"><a href="userindex.php" class="nav-link">Home</a></li>
 	          
 	          
 
-			  <li class="nav-item"><a href="services.html" class="nav-link">Services</a></li>
+			  <li class="nav-item"><a href="services.php" class="nav-link">Services</a></li>
 			  
 	          
-	          <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
+	          <li class="nav-item"><a href="about.php" class="nav-link">About</a></li>
 	          <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="shop.html" id="dropdown04" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Products</a>
+              <a class="nav-link dropdown-toggle" href="shop.php" id="dropdown04" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Products</a>
               <div class="dropdown-menu" aria-labelledby="dropdown04">
-              	<a class="dropdown-item" href="shop.html">Products</a>
-                <a class="dropdown-item" href="product-single.html">Single Product</a>
-                <a class="dropdown-item" href="cart.html">Cart</a>
-                <a class="dropdown-item" href="checkout.html">Checkout</a>
+              	<a class="dropdown-item" href="shop.php">Products</a>
+                <a class="dropdown-item" href="singleproduct.php">Single Product</a>
+                <a class="dropdown-item" href="cart.php">Cart</a>
+                <a class="dropdown-item" href="checkout.php">Checkout</a>
               </div>
             </li>
-	          <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
-			  <li class="nav-item"><a href="booknow.html" class="nav-link">Book Now</a></li>
-	          <li class="nav-item cart"><a href="cart.html" class="nav-link"><span class="icon icon-shopping_cart"></span><span class="bag d-flex justify-content-center align-items-center"><small>1</small></span></a></li>
+	          <li class="nav-item"><a href="contact.php" class="nav-link">Contact</a></li>
+			  <li class="nav-item"><a href="booknow.php" class="nav-link">Book Now</a></li>
+	          <li class="nav-item cart"><a href="cart.php" class="nav-link"><span class="icon icon-shopping_cart"></span><span class="bag d-flex justify-content-center align-items-center"><small>1</small></span></a></li>
 	        </ul>
 	      </div>
 		  </div>
@@ -72,7 +80,7 @@
 
             <div class="col-md-7 col-sm-12 text-center ftco-animate">
             	<h1 class="mb-3 mt-5 bread">Product Detail</h1>
-	            <p class="breadcrumbs"><span class="mr-2"><a href="index.html">Home</a></span> <span>Product Detail</span></p>
+	            <p class="breadcrumbs"><span class="mr-2"><a href="userindex.php">Home</a></span> <span>Product Detail</span></p>
             </div>
 
           </div>
@@ -84,26 +92,18 @@
     	<div class="container">
     		<div class="row">
     			<div class="col-lg-6 mb-5 ftco-animate">
-    				<a href="images/niveafacewash2.jpg" class="image-popup"><img src="images/niveafacewash2.jpg" class="img-fluid" alt="Colorlib Template"></a>
+    				<a href="<?php echo $row['product_image'];?>" class="image-popup"><img src="<?php echo $row['product_image'];?>" class="img-fluid" alt="Colorlib Template"></a>
     			</div>
     			<div class="col-lg-6 product-details pl-md-5 ftco-animate">
-    				<h3>Nivea Facewash</h3>
-    				<p class="price"><span>$4.90</span></p>
-    				<p>Nivea Face Wash is a popular skincare product designed to cleanse and refresh the skin. It is typically formulated to suit various skin types, including dry, oily, and sensitive skin. Nivea Face Wash is known for its gentle yet effective cleansing action, removing dirt, oil, and impurities without over-drying the skin.</p>
-    				<p>The face wash often contains moisturizing ingredients like glycerin, ensuring that the skin feels soft and hydrated after use. Many Nivea face wash variants are enriched with natural extracts such as chamomile or vitamin E, which help soothe and nourish the skin while cleansing.</p>
+    				<h3><?php echo $row['product_name'];?></h3>
+    				<p class="price"><span>Rs.<?php echo $row['price'];?></span></p>
+    				<p><?php echo $row['pro_description'];?></p>
+    				
 						
 						<div class="row mt-4">
 							<div class="col-md-6">
 								<div class="form-group d-flex">
-		              <div class="select-wrap">
-	                  <div class="icon"><span class="ion-ios-arrow-down"></span></div>
-	                  <select name="" id="" class="form-control">
-	                  	<option value="">Small</option>
-	                    <option value="">Medium</option>
-	                    <option value="">Large</option>
-	                    <option value="">Extra Large</option>
-	                  </select>
-	                </div>
+		              
 		            </div>
 							</div>
 							<div class="w-100"></div>
@@ -121,7 +121,18 @@
 	             	</span>
 	          	</div>
           	</div>
-          	<p><a href="cart.html" class="btn btn-primary py-3 px-5">Add to Cart</a></p>
+            <form action="addto_cart.php" method="POST">
+                        <input type="hidden" name="product_id" value= <?php echo $row['product_id']; ?>  >
+                        
+                        <button type="submit" class="btn btn-primary btn-outline-primary">Add to Cart</button>
+                    </form>
+                    <form action="checkout.php" method="POST">
+                        <input type="hidden" name="product_id" value="' . $product_id . '">
+                        
+                        <button type="submit" class="btn btn-primary btn-outline-primary">Buy Now</button>
+                    </form>
+          	
+            
     			</div>
     		</div>
     	</div>
@@ -232,6 +243,11 @@
 		    });
 		    
 		});
+
+
+
+    
+
 	</script>
 
     

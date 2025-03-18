@@ -84,8 +84,8 @@ function smtp_mailer($to,$time,$date,$service_name) //calling function for creat
             <p class='content'>
                 Dear Customer, <br><br>
                 Your appointment for <span class='highlight'>$service_name</span> on 
-                <span class='highlight'>$appointment_date</span> at 
-                <span class='highlight'>$appointment_time</span> has been successfully confirmed. <br><br>
+                <span class='highlight'>$date</span> at 
+                <span class='highlight'>$time</span> has been successfully confirmed. <br><br>
                 We look forward to pampering you at <strong>Serenity Styles</strong> and ensuring you have a relaxing and delightful experience. <br><br>
                 If you have any questions or need to reschedule, please contact us at 
                 <a href='mailto:serenitystyles.online@gmail.com' style='color: #c49a6c;'>serenitystyles.online@gmail.com</a>.

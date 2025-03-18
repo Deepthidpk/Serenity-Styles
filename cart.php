@@ -72,16 +72,9 @@ $total = $subtotal + $delivery_fee;
 	          <li class="nav-item"><a href="index.php" class="nav-link">Home</a></li>
 	          <li class="nav-item"><a href="services.php" class="nav-link">Services</a></li>
 	          <li class="nav-item"><a href="about.php" class="nav-link">About</a></li>
-	          <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="shop.php" id="dropdown04" data-toggle="dropdown">Products</a>
-              <div class="dropdown-menu">
-              	<a class="dropdown-item" href="shop.php">Products</a>
-                <a class="dropdown-item" href="cart.php">Cart</a>
-                <a class="dropdown-item" href="checkout.php">Checkout</a>
-              </div>
-            </li>
+            <li class="nav-item"><a href="shop.php" class="nav-link">Products</a></li>
 	          <li class="nav-item"><a href="contact.php" class="nav-link">Contact</a></li>
-            <li class="nav-item"><a href="booknow.php" class="nav-link">Book Now</a></li>
+            
             <li class="nav-item"><a href="review.php" class="nav-link">Reviews</a></li>
 			  
 	          <li class="nav-item cart"><a href="cart.php" class="nav-link"><span class="icon icon-shopping_cart"></span><span class="bag d-flex justify-content-center align-items-center"><small><?= count($cart_items) ?></small></span></a></li>
@@ -98,7 +91,7 @@ $total = $subtotal + $delivery_fee;
           <div class="row slider-text justify-content-center align-items-center">
             <div class="col-md-7 col-sm-12 text-center ftco-animate">
             	<h1 class="mb-3 mt-5 bread">Cart</h1>
-	            <p class="breadcrumbs"><span class="mr-2"><a href="index.php">Home</a></span> <span>Cart</span></p>
+	            <p class="breadcrumbs"><span class="mr-2"><a href="userindex.php">Home</a></span> <span>Cart</span></p>
             </div>
           </div>
         </div>
@@ -123,10 +116,14 @@ $total = $subtotal + $delivery_fee;
 						    </thead>
 						    <tbody>
                 <?php if (count($cart_items) > 0): ?>
+        <?php 
+            $cart_ids = []; // Initialize an array to store cart IDs
+        ?>
     <?php foreach ($cart_items as $item): ?>
         <?php
            
             $available_stock = $item['qty']; // Available stock from database
+            $cart_ids[] = $item['cart_id']; // Store cart_id in array
             
         ?>
 
@@ -190,11 +187,16 @@ $total = $subtotal + $delivery_fee;
     				<div class="cart-total mb-3">
     					<h3>Cart Totals</h3>
     					<p class="d-flex"><span>Subtotal</span><span>Rs.<?= number_format($subtotal, 2); ?></span></p>
-    					<p class="d-flex"><span>Delivery</span><span>Rs.<?= number_format($delivery_fee, 2); ?></span></p>
+    					
     					<hr>
     					<p class="d-flex total-price"><span>Total</span><span>Rs.<?= number_format($total, 2); ?></span></p>
     				</div>
-    				<p class="text-center"><a href="checkout.php" class="btn btn-primary py-3 px-4">Proceed to Checkout</a></p>
+            <form action="checkout.php"method="POST">
+<!-- Hidden input to store cart_id array -->
+<input type="hidden" name="cart_ids" value="<?= htmlspecialchars(json_encode($cart_ids)); ?>">
+    				<input type="submit" value="Proceed to Checkout"class="btn btn-primary py-3 px-4">
+            </form>
+             
     			</div>
     		</div>
 			</div>

@@ -2,6 +2,20 @@
 
 include 'connect.php'; // Database connection file
 
+
+if (!empty($_SESSION["email"])) {
+	$email = $_SESSION["email"];
+	$sql = "SELECT u.name FROM tbl_user AS u JOIN tbl_login AS l ON u.user_id = l.user_id WHERE l.email = '$email'";
+
+	$result = $conn->query($sql);
+	if ($result->num_rows > 0) {
+		$row = $result->fetch_assoc();
+	}
+}
+
+
+
+
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     echo "<script>alert('You must be logged in to submit a review.'); window.location.href='login.php';</script>";
@@ -145,19 +159,50 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <li class="nav-item"><a href="userindex.php" class="nav-link">Home</a></li>
                     <li class="nav-item"><a href="services.php" class="nav-link">Services</a></li>
                     <li class="nav-item"><a href="about.php" class="nav-link">About</a></li>
-                    <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="shop.php" id="dropdown04" data-toggle="dropdown"
-              aria-haspopup="true" aria-expanded="false">Products</a>
-            <div class="dropdown-menu" aria-labelledby="dropdown04">
-              <a class="dropdown-item" href="shop.php">Products</a>
-              <a class="dropdown-item" href="product-single.php">Single Product</a>
-              <a class="dropdown-item" href="cart.php">Cart</a>
-              <a class="dropdown-item" href="checkout.php">Checkout</a>
-            </div>
-          </li>
+                    <li class="nav-item"><a href="shop.php" class="nav-link">Products</a></li>
                     <li class="nav-item"><a href="contact.php" class="nav-link">Contact</a></li>
-                    <li class="nav-item active"><a href="booknow.php" class="nav-link">Book Now</a></li>
-                    <li class="nav-item"><a href="profile.php" class="nav-link">Profile</a></li>
+                    <li class="nav-item"><a href="review.php" class="nav-link">Review</a></li>
+
+
+
+                    <?php if (isset($_SESSION['username']) && $_SESSION['username'] === 'user') { ?>
+
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" data-toggle="dropdown"
+        aria-haspopup="true" aria-expanded="false">
+        <img src="images/profile2.jpg" alt="Profile" id="profile-icon" class="rounded-circle"
+            style="width: 30px; height: 30px;">
+    </a>
+    <?php
+    $user_id = $_SESSION['user_id'];
+    ?>
+    <div class="dropdown-menu" aria-labelledby="profileDropdown">
+        <a class="dropdown-item"
+            href="profile.php?user_id=<?php echo $user_id; ?>"><?php echo $row['name']; ?></a>
+        <a class="dropdown-item" href="profile.php?user_id=<?php echo $user_id; ?>">Profile</a>
+
+        <a class="dropdown-item" href="viewappointments.php?user_id=<?php echo $user_id; ?>">View
+            Appointments</a>
+        <a class="dropdown-item" href="vieworders.html?user_id=<?php echo $user_id; ?>">View
+            Orders</a>
+        <a class="dropdown-item" href="logout.php?user_id=<?php echo $user_id; ?>">Log Out</a>
+    </div>
+
+</li>
+<?php }
+
+?>
+<?php if (isset($_SESSION['username']) && $_SESSION['username'] === 'user') { ?>
+
+<li class="nav-item cart"><a href="cart.php" class="nav-link"><span
+            class="icon icon-shopping_cart"></span><span
+            class="bag d-flex justify-content-center align-items-center"><small>1</small></span></a>
+</li>
+<?php }
+
+?>
+                    
+                    
                 </ul>
             </div>
         </div>

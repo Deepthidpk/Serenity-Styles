@@ -5,7 +5,7 @@ if(isset($_POST['product_id'])){
     $user_id = $_SESSION['user_id'];
 
     // Check if the product already exists in the cart
-    $sql = "SELECT * FROM tbl_cart WHERE user_id = $user_id AND product_id = $product_id";
+    $sql = "SELECT * FROM tbl_cart WHERE user_id = $user_id AND product_id = $product_id AND status='Active'";
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
@@ -18,10 +18,12 @@ if(isset($_POST['product_id'])){
         // Product does not exist in the cart, insert a new row
         $sql = "SELECT price FROM tbl_products WHERE product_id = $product_id";
         $result = $conn->query($sql);
+
         $row = $result->fetch_assoc();
+        $price=$row["price"];
         
 
-        $sql = "INSERT INTO tbl_cart (user_id, product_id, quantity) VALUES ($user_id, $product_id, 1)";
+        $sql = "INSERT INTO tbl_cart (user_id, product_id, quantity,unit_price) VALUES ($user_id, $product_id, 1,$price)";
     }
 
     if ($conn->query($sql)) {

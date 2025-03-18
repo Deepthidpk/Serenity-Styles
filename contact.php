@@ -58,17 +58,9 @@ if ($result->num_rows > 0){
 			  
 	         
 	          <li class="nav-item"><a href="about.php" class="nav-link">About</a></li>
-	          <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="shop.php" id="dropdown04" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Products</a>
-              <div class="dropdown-menu" aria-labelledby="dropdown04">
-              	<a class="dropdown-item" href="shop.php">Products</a>
-                <a class="dropdown-item" href="product-single.php">Single Product</a>
-                <a class="dropdown-item" href="room.php">Cart</a>
-                <a class="dropdown-item" href="checkout.php">Checkout</a>
-              </div>
-            </li>
+            <li class="nav-item"><a href="shop.php" class="nav-link">Products</a></li>
 	          <li class="nav-item active"><a href="contact.php" class="nav-link">Contact</a></li>
-            <li class="nav-item"><a href="booknow.php" class="nav-link">Book Now</a></li>
+            
 				<li class="nav-item"><a href="review.php" class="nav-link">Review</a></li>
 	          <?php if (isset($_SESSION['username']) && $_SESSION['username'] === 'user') { ?>
 
@@ -86,9 +78,9 @@ if ($result->num_rows > 0){
       href="profile.php?user_id=<?php echo $user_id; ?>"><?php echo $row['name']; ?></a>
     <a class="dropdown-item" href="profile.php?user_id=<?php echo $user_id; ?>">Profile</a>
 
-    <a class="dropdown-item" href="viewappointments.html?user_id=<?php echo $user_id; ?>">View
+    <a class="dropdown-item" href="viewappointments.php?user_id=<?php echo $user_id; ?>">View
       Appointments</a>
-    <a class="dropdown-item" href="vieworders.html?user_id=<?php echo $user_id; ?>">View
+    <a class="dropdown-item" href="order.php?user_id=<?php echo $user_id; ?>">View
       Orders</a>
     <a class="dropdown-item" href="logout.php?user_id=<?php echo $user_id; ?>">Log Out</a>
   </div>

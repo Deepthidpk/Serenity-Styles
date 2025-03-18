@@ -1,40 +1,35 @@
-<!-- <?php
-session_start();
-// Database connection
-$conn = mysqli_connect("localhost", "root", "", "beautyblend_db");
-
-// Check connection
-if (!$conn) {
-    die("Connection failed: " . mysqli_connect_error());
-}
+<?php
+include('connect.php');
 
 // Fetch user's appointments
 $user_id = $_SESSION['user_id'] ?? 1; // Replace with actual session handling
-
+$today = date('Y-m-d'); // Define $today before using it
 // Fetch upcoming appointments
-$upcoming_query = "SELECT a.*, s.service_name, st.staff_name 
-                  FROM appointments a 
-                  JOIN services s ON a.service_id = s.id 
-                  JOIN staff st ON a.staff_id = st.id 
-                  WHERE a.user_id = ? AND a.appointment_date >= CURDATE() 
-                  ORDER BY a.appointment_date ASC";
+$upcoming_query = "SELECT a.appointment_id, a.date, a.time, a.status, s.service_name 
+                   FROM tbl_appointment a
+                   JOIN tbl_services s ON a.service_id = s.service_id
+                   WHERE a.user_id = ? AND a.date >= ?
+                   ORDER BY a.date ASC";
+
 $stmt = $conn->prepare($upcoming_query);
-$stmt->bind_param("i", $user_id);
+$stmt->bind_param("is", $user_id, $today); // "i" for integer, "s" for string (date)
 $stmt->execute();
 $upcoming_result = $stmt->get_result();
 
+
 // Fetch past appointments
-$past_query = "SELECT a.*, s.service_name, st.staff_name 
-               FROM appointments a 
-               JOIN services s ON a.service_id = s.id 
-               JOIN staff st ON a.staff_id = st.id 
-               WHERE a.user_id = ? AND a.appointment_date < CURDATE() 
-               ORDER BY a.appointment_date DESC";
+$past_query = "SELECT a.appointment_id, a.date, a.time, a.status, s.service_name 
+               FROM tbl_appointment a
+               JOIN tbl_services s ON a.service_id = s.service_id
+               WHERE a.user_id = ? AND a.date < ?
+               ORDER BY a.date DESC";
+
 $stmt = $conn->prepare($past_query);
-$stmt->bind_param("i", $user_id);
+$stmt->bind_param("is", $user_id, $today); // "i" for integer (user_id), "s" for string (date)
 $stmt->execute();
 $past_result = $stmt->get_result();
-?> -->
+
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -64,13 +59,13 @@ $past_result = $stmt->get_result();
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
         <div class="container">
-            <a class="navbar-brand" href="index.html">Beauty<small>Blend</small></a>
+            <a class="navbar-brand" href="userindex.html">Beauty<small>Blend</small></a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="oi oi-menu"></span> Menu
             </button>
             <div class="collapse navbar-collapse" id="ftco-nav">
                 <ul class="navbar-nav ml-auto">
-                    <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+                    <li class="nav-item"><a href="userindex.html" class="nav-link">Home</a></li>
                     <li class="nav-item"><a href="services.html" class="nav-link">Services</a></li>
                     <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
                     <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
@@ -89,7 +84,7 @@ $past_result = $stmt->get_result();
                 <div class="row slider-text justify-content-center align-items-center">
                     <div class="col-md-7 col-sm-12 text-center ftco-animate">
                         <h1 class="mb-3 mt-5 bread">My Appointments</h1>
-                        <p class="breadcrumbs"><span class="mr-2"><a href="index.html">Home</a></span> <span>Appointments</span></p>
+                        <p class="breadcrumbs"><span class="mr-2"><a href="userindex.html">Home</a></span> <span>Appointments</span></p>
                     </div>
                 </div>
             </div>
@@ -110,20 +105,17 @@ $past_result = $stmt->get_result();
                                     <div class="row">
                                         <div class="col-md-3">
                                             <strong>Date & Time</strong>
-                                            <p><?php echo date('M d, Y', strtotime($appointment['appointment_date'])); ?><br>
-                                               <?php echo date('h:i A', strtotime($appointment['appointment_time'])); ?></p>
+                                            <p><?php echo date('M d, Y', strtotime($appointment['date'])); ?><br>
+                                               <?php echo date('h:i A', strtotime($appointment['time'])); ?></p>
                                         </div>
                                         <div class="col-md-3">
                                             <strong>Service</strong>
                                             <p><?php echo htmlspecialchars($appointment['service_name']); ?></p>
                                         </div>
-                                        <div class="col-md-3">
-                                            <strong>Stylist</strong>
-                                            <p><?php echo htmlspecialchars($appointment['staff_name']); ?></p>
-                                        </div>
+                                        
                                         <div class="col-md-3 text-md-right">
-                                            <a href="reschedule-appointment.php?id=<?php echo $appointment['id']; ?>" class="btn btn-primary py-2 px-3">Reschedule</a>
-                                            <a href="cancel-appointment.php?id=<?php echo $appointment['id']; ?>" class="btn btn-danger py-2 px-3">Cancel</a>
+                                            <a href="reschedule-appointment.php?id=<?php echo $appointment['appointment_id']; ?>" class="btn btn-primary py-2 px-3">Reschedule</a>
+                                            <a href="cancel-appointment.php?id=<?php echo $appointment['appointment_id']; ?>" class="btn btn-danger py-2 px-3">Cancel</a>
                                         </div>
                                     </div>
                                 </div>
@@ -146,22 +138,19 @@ $past_result = $stmt->get_result();
                                     <div class="row">
                                         <div class="col-md-3">
                                             <strong>Date & Time</strong>
-                                            <p><?php echo date('M d, Y', strtotime($appointment['appointment_date'])); ?><br>
-                                               <?php echo date('h:i A', strtotime($appointment['appointment_time'])); ?></p>
+                                            <p><?php echo date('M d, Y', strtotime($appointment['date'])); ?><br>
+                                               <?php echo date('h:i A', strtotime($appointment['time'])); ?></p>
                                         </div>
                                         <div class="col-md-3">
                                             <strong>Service</strong>
                                             <p><?php echo htmlspecialchars($appointment['service_name']); ?></p>
                                         </div>
-                                        <div class="col-md-3">
-                                            <strong>Stylist</strong>
-                                            <p><?php echo htmlspecialchars($appointment['staff_name']); ?></p>
-                                        </div>
+                                        
                                         <div class="col-md-3 text-md-right">
                                             <?php if (!isset($appointment['review_id'])): ?>
-                                                <a href="write-review.php?appointment_id=<?php echo $appointment['id']; ?>" class="btn btn-primary py-2 px-3">Write Review</a>
+                                                <a href="write-review.php?appointment_id=<?php echo $appointment['appointment_id']; ?>" class="btn btn-primary py-2 px-3">Write Review</a>
                                             <?php endif; ?>
-                                            <a href="book-similar.php?service_id=<?php echo $appointment['service_id']; ?>" class="btn btn-secondary py-2 px-3">Book Similar</a>
+                                           
                                         </div>
                                     </div>
                                 </div>
@@ -175,16 +164,7 @@ $past_result = $stmt->get_result();
         </div>
     </section>
 
-    <!-- Footer -->
-    <?php include 'footer.php'; ?>
-
-    <!-- loader -->
-    <div id="ftco-loader" class="show fullscreen">
-        <svg class="circular" width="48px" height="48px">
-            <circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/>
-            <circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/>
-        </svg>
-    </div>
+    
 
     <script src="js/jquery.min.js"></script>
     <script src="js/jquery-migrate-3.0.1.min.js"></script>
