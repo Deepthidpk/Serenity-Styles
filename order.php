@@ -68,6 +68,7 @@ foreach ($ordered_items as $item) {
                     <li class="nav-item"><a href="about.php" class="nav-link">About</a></li>
                     <li class="nav-item"><a href="shop.php" class="nav-link">Products</a></li>
                     <li class="nav-item"><a href="contact.php" class="nav-link">Contact</a></li>
+                    <li class="nav-item"><a href="review_view.php" class="nav-link">Cart</a></li>
                     <li class="nav-item"><a href="cart.php" class="nav-link">Cart</a></li>
                     <li class="nav-item active"><a href="order.php" class="nav-link">Orders</a></li>
                 </ul>

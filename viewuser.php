@@ -297,9 +297,9 @@ if ($result->num_rows > 0) {
         
         // Check user status to determine which button to show
         if ($row['status'] == 'Active') {
-            echo "<a href='update_status.php?id=" . $row['user_id'] . "&status=Inactive' class='btn btn-xs btn-danger'>Block</a>";
+            echo "<a href='update_status.php?id=" . $row['user_id'] . "&status=Inactive' class='btn btn-xs btn-danger'>Active</a>";
         } else {
-            echo "<a href='update_status.php?id=" . $row['user_id'] . "&status=Active' class='btn btn-xs btn-success'>Unblock</a>";
+            echo "<a href='update_status.php?id=" . $row['user_id'] . "&status=Active' class='btn btn-xs btn-success'>Inactive</a>";
         }
         
         echo "</td>

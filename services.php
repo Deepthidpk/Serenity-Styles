@@ -117,7 +117,8 @@ if (!empty($_SESSION["email"])) {
           
           <li class="nav-item"><a href="contact.php" class="nav-link">Contact</a></li>
           
-				<li class="nav-item"><a href="review.php" class="nav-link">Review</a></li>
+				<li class="nav-item"><a href="review_view.php" class="nav-link">Review</a></li>
+        <li class="nav-item"><a href="cart.php" class="nav-link">Cart</a></li>
 
           <?php if (isset($_SESSION['username']) && $_SESSION['username'] === 'user') { ?>
 
@@ -146,9 +147,7 @@ if (!empty($_SESSION["email"])) {
           ?>
           <?php if (isset($_SESSION['username']) && $_SESSION['username'] === 'user') { ?>
 
-            <li class="nav-item cart"><a href="cart.php" class="nav-link"><span
-                  class="icon icon-shopping_cart"></span><span
-                  class="bag d-flex justify-content-center align-items-center"><small>1</small></span></a></li>
+            
           <?php }
 
           ?>
@@ -196,6 +195,9 @@ if (!empty($_SESSION["email"])) {
 
                 <a class="nav-link" id="v-pills-3-tab" data-toggle="pill" href="#v-pills-3" role="tab"
                   aria-controls="v-pills-3" aria-selected="false">Makeup</a>
+
+                  <a class="nav-link" id="v-pills-4-tab" data-toggle="pill" href="#v-pills-4" role="tab"
+                  aria-controls="v-pills-4" aria-selected="false">Brow and Lash</a>
               </div>
             </div>
             <div class="col-md-12 d-flex align-items-center">
@@ -395,6 +397,58 @@ echo '
                     ?>
                   </div>
                 </div>
+
+
+                <div class="tab-pane fade" id="v-pills-4" role="tabpanel" aria-labelledby="v-pills-4-tab">
+                  <div class="row">
+                    <?php
+
+
+                    // Fetch services from the database
+                    $sql4 = "SELECT * FROM tbl_services WHERE catservice_id=6 AND status='active'";
+                    $result = $conn->query($sql4);
+
+                    if ($result->num_rows > 0) {
+                      while ($row = $result->fetch_assoc()) {
+                        // Escape values to prevent XSS
+                        $service_id = htmlspecialchars($row['service_id']);
+                        $service_name = htmlspecialchars($row['service_name']);
+                        $service_description = htmlspecialchars($row['service_description']);
+                        $service_price = htmlspecialchars($row['price']);
+                        $service_image = htmlspecialchars($row['service_image']); // Assuming image URL is stored in DB
+                    
+                        // Generate the dynamic service card
+                        echo '
+        <div class="col-md-3">
+            <div class="menu-entry">
+                <a href="service-details.php?id=' . $service_id . '" class="img" style="background-image: url(' . $service_image . ');"></a>
+                <div class="text text-center pt-4">
+                    <h3><a href="service-details.php?id=' . $service_id . '">' . $service_name . '</a></h3>
+                    <p>' . $service_description . '</p>
+                    <p class="price"><span>Rs.' . $service_price . '</span></p>
+                    
+                     <!-- Booking Form (GET Method) -->
+            <form action="booknow.php" method="GET">
+                <input type="hidden" name="service_id" value="' . htmlspecialchars($service_id) . '">
+                <input type="hidden" name="user_id" value="' . (isset($_SESSION['user_id']) ? htmlspecialchars($_SESSION['user_id']) : '') . '"> 
+                <button type="submit" class="btn btn-primary btn-outline-primary">Book Appointment</button>
+            </form>
+                </div>
+            </div>
+        </div>';
+                      }
+                    } else {
+                      echo "<p>No services available.</p>";
+                    }
+
+
+                    ?>
+                  </div>
+                </div>
+
+
+
+
               </div>
             </div>
           </div>

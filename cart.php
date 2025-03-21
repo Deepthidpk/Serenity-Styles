@@ -2,6 +2,17 @@
 
 require 'connect.php'; // Database connection
 
+if (!empty($_SESSION["email"])) {
+  $email = $_SESSION["email"];
+  $sql = "SELECT u.name FROM tbl_user AS u JOIN tbl_login AS l ON u.user_id = l.user_id WHERE l.email = '$email'";
+
+  $result = $conn->query($sql);
+  if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+  }
+}
+
+
 // Check if user is logged in
 if (!isset($_SESSION["user_id"])) {
     echo "Please log in to view your cart.";
@@ -69,15 +80,16 @@ $total = $subtotal + $delivery_fee;
 	      </button>
 	      <div class="collapse navbar-collapse" id="ftco-nav">
 	        <ul class="navbar-nav ml-auto">
-	          <li class="nav-item"><a href="index.php" class="nav-link">Home</a></li>
+	          <li class="nav-item"><a href="userindex.php" class="nav-link">Home</a></li>
 	          <li class="nav-item"><a href="services.php" class="nav-link">Services</a></li>
 	          <li class="nav-item"><a href="about.php" class="nav-link">About</a></li>
             <li class="nav-item"><a href="shop.php" class="nav-link">Products</a></li>
 	          <li class="nav-item"><a href="contact.php" class="nav-link">Contact</a></li>
             
-            <li class="nav-item"><a href="review.php" class="nav-link">Reviews</a></li>
+            <li class="nav-item"><a href="review_view.php" class="nav-link">Reviews</a></li>
 			  
 	          <li class="nav-item cart"><a href="cart.php" class="nav-link"><span class="icon icon-shopping_cart"></span><span class="bag d-flex justify-content-center align-items-center"><small><?= count($cart_items) ?></small></span></a></li>
+            
 	        </ul>
 	      </div>
 		  </div>

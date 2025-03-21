@@ -89,14 +89,7 @@ $user = $result->fetch_assoc();
 
 
 
-                <li class="nav-item cart">
-                    <a href="cart.php" class="nav-link">
-                        <span class="icon icon-shopping_cart"></span>
-                        <span class="bag d-flex justify-content-center align-items-center">
-                            <small>1</small>
-                        </span>
-                    </a>
-                </li>
+    <li class="nav-item"><a href="cart.php" class="nav-link">Cart</a></li>
             </ul>
         </div>
         </div>
@@ -110,7 +103,7 @@ $user = $result->fetch_assoc();
                 <div class="row slider-text justify-content-center align-items-center">
                     <div class="col-md-7 col-sm-12 text-center ftco-animate">
                         <h1 class="mb-3 mt-5 bread">My Profile</h1>
-                        <p class="breadcrumbs"><span class="mr-2"><a href="index.php">Home</a></span> <span>Profile</span></p>
+                        <p class="breadcrumbs"><span class="mr-2"><a href="userindex.php">Home</a></span> <span>Profile</span></p>
                     </div>
                 </div>
             </div>

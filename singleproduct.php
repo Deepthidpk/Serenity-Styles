@@ -4,7 +4,7 @@ $product_id=$_POST['product_id'];
 $sql="SELECT * FROM tbl_products WHERE status='available' AND product_id=$product_id";
 $result=$conn->query($sql);
 $row=$result->fetch_assoc();
-echo $product_id;
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -47,24 +47,16 @@ echo $product_id;
 	        <ul class="navbar-nav ml-auto">
 	          <li class="nav-item"><a href="userindex.php" class="nav-link">Home</a></li>
 	          
-	          
+	          <li class="nav-item"><a href="about.php" class="nav-link">About</a></li>
 
 			  <li class="nav-item"><a href="services.php" class="nav-link">Services</a></li>
-			  
+			  <li class="nav-item"><a href="shop.php" class="nav-link">Products</a></li>
 	          
-	          <li class="nav-item"><a href="about.php" class="nav-link">About</a></li>
-	          <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="shop.php" id="dropdown04" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Products</a>
-              <div class="dropdown-menu" aria-labelledby="dropdown04">
-              	<a class="dropdown-item" href="shop.php">Products</a>
-                <a class="dropdown-item" href="singleproduct.php">Single Product</a>
-                <a class="dropdown-item" href="cart.php">Cart</a>
-                <a class="dropdown-item" href="checkout.php">Checkout</a>
-              </div>
-            </li>
+	          
+	         
 	          <li class="nav-item"><a href="contact.php" class="nav-link">Contact</a></li>
-			  <li class="nav-item"><a href="booknow.php" class="nav-link">Book Now</a></li>
-	          <li class="nav-item cart"><a href="cart.php" class="nav-link"><span class="icon icon-shopping_cart"></span><span class="bag d-flex justify-content-center align-items-center"><small>1</small></span></a></li>
+			  <li class="nav-item"><a href="review_view.php" class="nav-link">Review</a></li>
+        <li class="nav-item"><a href="cart.php" class="nav-link">Cart</a></li>
 	        </ul>
 	      </div>
 		  </div>

@@ -1,6 +1,17 @@
  <?php
 include 'connect.php'; // Database connection file
 
+if (!empty($_SESSION["email"])) {
+    $email = $_SESSION["email"];
+    $sql = "SELECT u.name FROM tbl_user AS u JOIN tbl_login AS l ON u.user_id = l.user_id WHERE l.email = '$email'";
+  
+    $result = $conn->query($sql);
+    if ($result->num_rows > 0) {
+      $row = $result->fetch_assoc();
+    }
+  }
+  
+
 // Fetch all approved reviews
 $sql = "SELECT r.review_id, r.user_id, r.comment, r.rating, r.review_date, u.name 
         FROM tbl_review r
@@ -201,9 +212,40 @@ $total_reviews = $result->num_rows;
                         </div>
                     </li>
                     <li class="nav-item"><a href="contact.php" class="nav-link">Contact</a></li>
-                    <li class="nav-item"><a href="booknow.php" class="nav-link">Book Now</a></li>
-                    <li class="nav-item active"><a href="all_reviews.php" class="nav-link">Reviews</a></li>
-                    <li class="nav-item"><a href="profile.php" class="nav-link">Profile</a></li>
+                   
+                    <li class="nav-item active"><a href="review_view.php" class="nav-link">Reviews</a></li>
+                    <?php if (isset($_SESSION['username']) && $_SESSION['username'] === 'user') { ?>
+
+<li class="nav-item dropdown">
+  <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" data-toggle="dropdown"
+    aria-haspopup="true" aria-expanded="false">
+    <img src="images/profile2.jpg" alt="Profile" id="profile-icon" class="rounded-circle"
+      style="width: 30px; height: 30px;">
+  </a>
+  <?php
+  $user_id = $_SESSION['user_id'];
+  ?>
+  <div class="dropdown-menu" aria-labelledby="profileDropdown">
+    <a class="dropdown-item"
+      href="profile.php?user_id=<?php echo $user_id; ?>"><?php echo $row['name']; ?></a>
+    <a class="dropdown-item" href="profile.php?user_id=<?php echo $user_id; ?>">Profile</a>
+
+    <a class="dropdown-item" href="viewappointments.php?user_id=<?php echo $user_id; ?>">View
+      Appointments</a>
+    <a class="dropdown-item" href="order.php?user_id=<?php echo $user_id; ?>">View Orders</a>
+    <a class="dropdown-item" href="logout.php?user_id=<?php echo $user_id; ?>">Log Out</a>
+  </div>
+
+</li> <?php }
+
+?>
+<?php if (isset($_SESSION['username']) && $_SESSION['username'] === 'user') { ?>
+
+    
+<?php }
+
+?>
+                   
                 </ul>
             </div>
         </div>

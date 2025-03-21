@@ -1,179 +1,279 @@
 <?php
-include('connect.php');
+require 'connect.php'; // Database connection
 
-
-// Check if user_id exists in the session
-if (!isset($_SESSION['user_id'])) {
-    // If not, redirect to the login page or show an error
-    echo "Please log in to view your payment details.";
-    exit();
+// Check if user is logged in
+if (!isset($_SESSION["user_id"])) {
+    die("Please log in to view your orders.");
 }
 
-// Fetch user ID from session
-$user_id = $_SESSION['user_id'];
+$user_id = $_SESSION["user_id"];
 
-// Fetch user name (assuming you need this for the report)
-$sql1 = "SELECT name FROM tbl_user WHERE user_id = ?";
-$stmt1 = $conn->prepare($sql1);
-$stmt1->bind_param("i", $user_id);
-$stmt1->execute();
-$result1 = $stmt1->get_result();
-$row1 = $result1->fetch_assoc();
-
-// Check if the GET request has the checkout ID
-if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['id'])) {
-    // Get checkout_id from the GET request
-    $checkout_id = $_GET['id'];
-
-    // Prepare the SQL query to get the payment details based on checkout_id and user_id
-    $sql = "SELECT * FROM tbl_payment WHERE checkout_id = ? AND user_id = ? AND status = 'Success'";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ii", $checkout_id, $user_id);
-    $stmt->execute();
-
-    // Get the result of the query
-    $result = $stmt->get_result();
-    
-    // Check if a record was found
-    if ($result->num_rows == 0) {
-        echo "No payment details found for this checkout.";
-        exit(); // Stop further execution if no records are found
-    }
-
-    // Close the statement
-    $stmt->close();
-} else {
-    echo "Invalid request or missing checkout ID.";
-    exit();
+// Validate checkout_id
+if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+    die("Invalid checkout ID.");
 }
 
+$checkout_id = intval($_GET['id']);
+
+// Prepare SQL query
+$stmt = $conn->prepare("
+    SELECT 
+        p.product_id, 
+        p.product_name, 
+        p.price AS cost, 
+        p.product_image, 
+        p.quantity AS available_stock,
+        c.quantity AS ordered_qty,
+        c.cart_id
+    FROM tbl_products p
+    INNER JOIN tbl_cart c ON p.product_id = c.product_id
+    INNER JOIN tbl_checkout_products cp ON c.cart_id = cp.cart_id
+    INNER JOIN tbl_payment py ON cp.checkout_id = py.checkout_id
+    WHERE py.user_id = ? AND cp.checkout_id = ?
+");
+
+if (!$stmt) {
+    die("Prepare failed: " . $conn->error);
+}
+
+if (!$stmt->bind_param("ii", $user_id, $checkout_id)) {
+    die("Binding failed: " . $stmt->error);
+}
+
+if (!$stmt->execute()) {
+    die("Execution failed: " . $stmt->error);
+}
+
+$result = $stmt->get_result();
+if (!$result) {
+    die("Getting result failed: " . $stmt->error);
+}
+
+// Fetch items
+$items = [];
+while ($row = $result->fetch_assoc()) {
+    $items[] = $row;
+}
+
+$stmt->close();
+
+$sql1="SELECT name FROM tbl_user WHERE user_id=$user_id ";
+$result= $conn->query($sql1);
+if($result->num_rows > 0) {
+    $row= $result->fetch_assoc();
+}
+
+$sql2="SELECT address FROM tbl_checkout WHERE user_id=$user_id AND checkout_id=$checkout_id";
+$result2= $conn->query($sql2);
+if($result2->num_rows > 0) {
+    $row2= $result2->fetch_assoc();
+}
+// Invoice data
+$invoiceNumber = $checkout_id; // Use checkout_id as invoice number
+$invoiceDate = date("d/m/Y");
+$customerName = $row['name']; // Fetch from DB if available
+$customerAddress = $row2['address']; // Fetch from DB if available$taxNumber = "123456"; // Fetch from DB if needed
+
+// Calculate totals
+$subTotal = 0;
+foreach ($items as $item) {
+    $subTotal += $item["cost"] * $item["ordered_qty"];
+}
+$taxRate = 0; // 0% tax
+$taxAmount = $subTotal * ($taxRate / 100);
+$total = $subTotal + $taxAmount;
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment Report</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        .report-container {
-            width: 100%;
-            max-width: 800px;
-            margin: auto;
-            text-align: center;
-        }
-        h2 {
-            margin-bottom: 10px;
-        }
-        .company-details {
-            text-align: left;
-            font-size: 14px;
-        }
-        .payment-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        .payment-table th, .payment-table td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: center;
-        }
-        .payment-table th {
-            background-color: #f2f2f2;
-        }
-        .print-btn {
-            display: block;
-            width: 150px;
-            margin: 20px auto;
-            padding: 10px;
-            background-color: #007bff;
-            color: white;
-            text-align: center;
-            text-decoration: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .print-btn:hover {
-            background-color: #0056b3;
-        }
-        @media print {
-            .print-btn {
-                display: none;
-            }
-            body {
-                margin: 0;
-                padding: 0;
-                font-size: 10px; /* Adjust font size for print */
-            }
-            .report-container {
-                width: 100%;
-                text-align: left;
-            }
-            .payment-table {
-                width: 100%;
-                font-size: 10px; /* Adjust table font size for printing */
-                margin: 0;
-            }
-            .payment-table th, .payment-table td {
-                padding: 6px; /* Reduce padding for better space utilization */
-            }
-            .company-details {
-                font-size: 12px;
-                margin-bottom: 10px;
-            }
-            @page {
-                size: A4 portrait; /* Force portrait orientation for printing */
-                margin: 20mm; /* Set margins for better utilization of space */
-            }
-            .page-break {
-                page-break-after: always;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Invoice</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+    body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+.invoice-container {
+    width: 210mm; /* A4 width */
+    max-width: 100%;
+    margin: 20px auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+    .header {
+        text-align: center;
+        background: #e8e8e8;
+        padding: 10px;
+    }
+    .header h1 {
+        font-size: 36px;
+        color: #5a2d82;
+        margin: 0;
+    }
+    .invoice-details {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px 0;
+    padding-right: 20px; /* Add right padding */
+}
+
+.right {
+    text-align: right;
+    margin-right: 40px; /* Add more right margin */
+}
+
+.totals {
+    text-align: right;
+    margin-right: 40px; /* Add right margin for totals */
+}
+
+    .invoice-details p {
+        margin: 5px 0;
+    }
+    .invoice-table {
+        width: 95%;
+        border-collapse: collapse;
+        margin: 20px 0;
+    }
+    .invoice-table th,
+    .invoice-table td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: center;
+    }
+    .invoice-table th {
+        background: #f4f4f4;
+    }
+    .totals p {
+        margin: 5px 0;
+    }
+    .terms {
+        margin: 20px 0;
+    }
+    .terms h3 {
+        margin-bottom: 10px;
+    }
+    .footer {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 14px;
+        color: #888;
+    }
+    
+   .print-button {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 15px;
+    background-color: #5a2d82;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+    }
+
+    .print-button:hover {
+        background-color: #452165;
+    }
+
+    @media print {
+    @page {
+        size: A4 portrait;
+        margin: 20mm;
+    }
+
+    body {
+        background: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .invoice-container {
+        width: 100%;
+        box-shadow: none;
+        border-radius: 0;
+        padding-right: 30px; /* Ensure content doesn't overflow */
+    }
+
+    .right,
+    .totals {
+        margin-right: 50px; /* Ensure right-aligned content stays within boundaries */
+    }
+
+    
+    .print-button {
+        display: none !important; /* Hide the print button when printing */
+    }
+}
+</style>
 </head>
 <body>
 
-<div class="report-container">
-    <h2>Payment Report</h2>
-    <div class="company-details">
-        <p><strong>Company Name:</strong> Serenity Styles</p>
-        <p><strong>Address:</strong> Hill top Street, Nilambur, Malappuram, Kerala, India</p>
-        <p><strong>Date:</strong> <?php echo date("Y-m-d"); ?></p>
+
+<div class="invoice-container">
+    <div class="header">
+        <h1>INVOICE</h1>
+        <h2>SERENITY STYLES</h2>
     </div>
-    
-    <table class="payment-table">
-    <?php while ($row = $result->fetch_assoc()) { ?>
-        <tr>
-            <td><strong>Customer Name</strong></td>
-            <td><?php echo htmlspecialchars($row1['name']); ?></td>
-        </tr>
-        <tr>
-            <td><strong>Payment ID</strong></td>
-            <td><?php echo htmlspecialchars($row['payment_id']); ?></td>
-        </tr>
-        <tr>
-            <td><strong>Amount</strong></td>
-            <td><?php echo htmlspecialchars($row['amount']); ?></td>
-        </tr>
-        <tr>
-            <td><strong>Payment Date</strong></td>
-            <td><?php echo htmlspecialchars($row['payment_date']); ?></td>
-        </tr>
-        <tr>
-            <td><strong>Status</strong></td>
-            <td><?php echo htmlspecialchars($row['status']); ?></td>
-        </tr>
-    <?php } ?>
-</table>
+    <div class="invoice-details">
+        <div class="left">
+            <p><strong>Invoice to:</strong> <?php echo $customerName; ?></p>
+        </div>
+        <div class="center">
+            <p><strong>Address information:</strong></p>
+            <p><?php echo $customerAddress; ?></p>
+        </div>
+        <div class="right">
+            <p><strong>Invoice No:</strong> <?php echo $invoiceNumber; ?></p>
+            <p><strong>Date:</strong> <?php echo $invoiceDate; ?></p>
+        </div>
+    </div>
+    <table class="invoice-table">
+        <thead>
+            <tr>
+                <th>ITEM</th>
+                <th>COST</th>
+                <th>QTY</th>
+                <th>TOTAL</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($items as $item): ?>
+            <tr>
+                <td><?php echo htmlspecialchars($item["product_name"]); ?></td>
+                <td>Rs. <?php echo number_format($item["cost"], 2); ?></td>
+                <td><?php echo $item["ordered_qty"]; ?></td>
+                <td>Rs. <?php echo number_format($item["cost"] * $item["ordered_qty"], 2); ?></td>
+            </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+    <div class="totals">
+        <p>Sub Total: Rs. <?php echo number_format($subTotal, 2); ?></p>
+        <p>Tax: <?php echo $taxRate; ?>%</p>
+        <p><strong>TOTAL: Rs. <?php echo number_format($total, 2); ?></strong></p>
+    </div>
+    <div class="terms">
+        <h3>TERMS & CONDITIONS</h3>
+        <p>No returns on opened products. Exchanges within 7 days for unused items with proof of purchase. Not responsible for allergic reactions or price changes.
 
+</p>
+    </div>
+    <div class="footer">
+        <p>www.luxuryrealestate.com</p>
+        <p>serenitystyles.online@gmail.com</p>
+    </div>
 
-    <button class="print-btn" onclick="window.print()">Print Report</button>
 </div>
+<button class="print-button" onclick="window.print()" style="margin: 20px auto; display: block; padding: 10px 20px; font-size: 16px;">Print Invoice</button>
 
 </body>
 </html>

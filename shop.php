@@ -73,7 +73,8 @@ if ($result->num_rows > 0){
 	          
 	          <li class="nav-item"><a href="contact.php" class="nav-link">Contact</a></li>
            
-            <li class="nav-item"><a href="review.php" class="nav-link">Review</a></li>
+            <li class="nav-item"><a href="review_view.php" class="nav-link">Review</a></li>
+            <li class="nav-item"><a href="cart.php" class="nav-link">Cart</a></li>
         <?php if (isset($_SESSION['username']) && $_SESSION['username'] === 'user') { ?>
 
 <li class="nav-item dropdown">
@@ -103,10 +104,7 @@ if ($result->num_rows > 0){
 ?>
 <?php if (isset($_SESSION['username']) && $_SESSION['username'] === 'user') { ?>
 
-  <li class="nav-item cart"><a href="cart.php" class="nav-link"><span
-        class="icon icon-shopping_cart"></span><span
-        class="bag d-flex justify-content-center align-items-center"><small>1</small></span></a>
-  </li>
+  
 <?php }
 
 ?>

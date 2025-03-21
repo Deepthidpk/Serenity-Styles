@@ -1,112 +1,6 @@
 <?php
-include("connect.php");
-
-require __DIR__ . "/vendor/autoload.php";
-
-// Create a Google Client object
-
-$client=new Google\Client;
-$client->setClientId("91981920181-u001cgasvcrtcpblsfev8mhuccle262f.apps.googleusercontent.com");
-$client->setClientSecret("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");
-$client->setRedirectUri("http://localhost/coffeeduplicate/userindex.php");
-$client->addScope('email');
-$client->addScope('profile');
-
-if(!$_SESSION["access_token"]){
-
-
-// Exchange the authorization code for an access token
-if (isset($_GET['code'])) {
-	
-    $token = $client->fetchAccessTokenWithAuthCode($_GET['code']);
-    $_SESSION['access_token'] = $token;
-
-    // Create a Google OAuth2 service
-    $google_oauth = new Google_Service_Oauth2($client);
-
-    // Get user info
-    $user_info = $google_oauth->userinfo->get();
-
-    // Get user details
-    $email = $user_info->email;
-    $name = $user_info->name;
-
-    // Check if the user already exists
-    $stmt = $conn->prepare('SELECT user_id FROM tbl_login WHERE email = ?');
-    $stmt->bind_param('s', $email);
-    $stmt->execute();
-    $stmt->store_result();
-
-    if ($stmt->num_rows == 0) {
-        // Insert the new user into tbl_login
-        $stmt->close();
-		$stmt = $conn->prepare('INSERT INTO tbl_user ( `name`) VALUES (?)');
-            $stmt->bind_param('s', $name);
-        
-        if ($stmt->execute()) {
-            // Get the last inserted user_id
-            $user_id = $conn->insert_id;
-
-            // Insert into tbl_user
-            $stmt->close();
-			$stmt = $conn->prepare("INSERT INTO tbl_login (user_id, email, status) VALUES (?, ?, ?)");
-			$status = 'Active'; // Define the string separately
-			$stmt->bind_param("iss", $user_id, $email, $status);
-			
-            $stmt->execute();
-        }
-    } else {
-        $stmt->bind_result($user_id);
-        $stmt->fetch();
-    }
-    $stmt->close();
-
-    // Set session variables
-    $_SESSION["email"] = $email;
-
-    // Fetch user role
-    $stmt = $conn->prepare("SELECT user_id, role FROM tbl_login WHERE email = ?");
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows > 0) {
-        $row = $result->fetch_assoc();
-        $_SESSION["username"] = $row['role'];
-        $_SESSION["user_id"] = $row["user_id"];
-    } else {
-        $_SESSION["username"] = null;
-    }
-
-    $stmt->close();
-}
-}
-// If the user is not logged in, destroy the session and redirect
-if (!isset($_SESSION['username']) || $_SESSION['username'] != "user") {
-    session_unset(); // Unset all session variables
-    session_destroy(); // Destroy the session
-    header('Location: login.php');
-    exit(); // Stop further execution
-}
-
-$email = $_SESSION["email"];
-
-// Fetch user name
-$stmt = $conn->prepare("SELECT u.name AS name FROM tbl_user u 
-                        JOIN tbl_login l ON u.user_id = l.user_id 
-                        WHERE l.email = ?");
-$stmt->bind_param("s", $email);
-$stmt->execute();
-$result = $stmt->get_result();
-
-if ($result->num_rows > 0) {
-    $row = $result->fetch_assoc();
-	
-}
-
-$stmt->close();
+session_start();
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -175,69 +69,81 @@ $stmt->close();
         background-color: #e9ecef;
         margin: 0;
     }
-
-    .dropdown-menu-right {
-        right: 0;
-        left: auto;
-    }
-    .icon-user-circle-o {
-        color: #c49b63;
-    }
-    .dropdown-item i {
-        width: 20px;
-        color: #c49b63;
-    }
-    .dropdown-item:hover {
-        background-color: #f8f9fa;
-    }
     </style>
   </head>
   <body>
-  <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
-    <div class="container">
-        <a class="navbar-brand" href="userindex.php">Beauty<small>Blend</small></a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="oi oi-menu"></span> Menu
-        </button>
-        <div class="collapse navbar-collapse" id="ftco-nav">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item active"><a href="userindex.php" class="nav-link">Home</a></li>
-                <li class="nav-item"><a href="services.php" class="nav-link">Services</a></li>
-                <li class="nav-item"><a href="about.php" class="nav-link">About</a></li>
-                <li class="nav-item"><a href="shop.php" class="nav-link">Products</a></li>
-                <li class="nav-item"><a href="contact.php" class="nav-link">Contact</a></li>
-				
-				<li class="nav-item"><a href="review_view.php" class="nav-link">Review</a></li>
-				<li class="nav-item"><a href="cart.php" class="nav-link">Cart</a></li>
-				
-                
-                <?php if(isset($_SESSION['username'])){?>
-    <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <img src="images/profile2.jpg" alt="Profile" id="profile-icon" class="rounded-circle" style="width: 30px; height: 30px;">
-        </a>
-        <?php
-		$user_id=$_SESSION['user_id'];
-		?>
-<div class="dropdown-menu" aria-labelledby="profileDropdown">
-<a class="dropdown-item" href="profile.php?user_id=<?php echo $user_id; ?>"><?php echo $row['name']; ?></a>
-    <a class="dropdown-item" href="profile.php?user_id=<?php echo $user_id; ?>">Profile</a>
-   
-    <a class="dropdown-item" href="viewappointments.php?user_id=<?php echo $user_id; ?>">View Appointments</a>
-    <a class="dropdown-item" href="order.php?user_id=<?php echo $user_id; ?>">View Orders</a>
-    <a class="dropdown-item" href="logout.php?user_id=<?php echo $user_id; ?>">Log Out</a>
-</div>
+    <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
+        <div class="container">
+            <a class="navbar-brand" href="index.php">Beauty<small>Blend</small></a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="oi oi-menu"></span> Menu
+            </button>
+            <div class="collapse navbar-collapse" id="ftco-nav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item active"><a href="index.php" class="nav-link">Home</a></li>
+                    <li class="nav-item"><a href="services.php" class="nav-link">Services</a></li>
+                    <li class="nav-item"><a href="about.php" class="nav-link">About</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="shop.php" id="dropdown04" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Products</a>
+                        <div class="dropdown-menu" aria-labelledby="dropdown04">
+                            <a class="dropdown-item" href="shop.php">Products</a>
+                            <a class="dropdown-item" href="product-single.php">Single Product</a>
+                            <a class="dropdown-item" href="cart.php">Cart</a>
+                            <a class="dropdown-item" href="checkout.php">Checkout</a>
+                        </div>
+                    </li>
+                    <li class="nav-item"><a href="contact.php" class="nav-link">Contact</a></li>
+                    <li class="nav-item"><a href="booknow.php" class="nav-link">Book Now</a></li>
+                    
+                    <?php if(isset($_SESSION['username'])): ?>
+                        <li class="nav-item profile-dropdown">
+                            <a href="#" class="nav-link">
+                                <span class="icon icon-user"></span>
+                                <span class="profile-username"><?php echo $_SESSION['username']; ?></span>
+                            </a>
+                            <div class="profile-dropdown-content">
+                                <a href="edit-profile.php">
+                                    <span class="icon icon-edit"></span> Edit Profile
+                                </a>
+                                <a href="view-appointments.php">
+                                    <span class="icon icon-calendar"></span> View Appointments
+                                </a>
+                                <a href="view-orders.php">
+                                    <span class="icon icon-shopping_cart"></span> View Orders
+                                </a>
+                                <div class="divider"></div>
+                                <a href="logout.php">
+                                    <span class="icon icon-sign-out"></span> Logout
+                                </a>
+                            </div>
+                        </li>
+                    <?php else: ?>
+                        <li class="nav-item">
+                            <a href="login.php" class="nav-link">
+                                <span class="icon icon-user"></span>
+                                <span>Login</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="register.php" class="nav-link">
+                                <span class="icon icon-user-plus"></span>
+                                <span>Register</span>
+                            </a>
+                        </li>
+                    <?php endif; ?>
 
-    </li> <?php } ?>
-
-
-
-	
-            </ul>
+                    <li class="nav-item cart">
+                        <a href="cart.php" class="nav-link">
+                            <span class="icon icon-shopping_cart"></span>
+                            <span class="bag d-flex justify-content-center align-items-center">
+                                <small>1</small>
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </div>
-    </div>
-</nav>
-
+    </nav>
     <section class="home-slider owl-carousel">
       <div class="slider-item" style="background-image: url(images/coverpage.jpg);">
       	<div class="overlay"></div>
@@ -405,7 +311,7 @@ $stmt->close();
     						<h3><a href="#">Haircut</a></h3>
     						<p>Our skilled stylists craft the perfect cut for a fresh, flattering look that complements your style.</p>
     						<p class="price"><span>$5.90</span></p>
-    						<p><a href="services.php" class="btn btn-primary btn-outline-primary">View Haircut</a></p>
+    						<p><a href="services.html" class="btn btn-primary btn-outline-primary">View Haircut</a></p>
     					</div>
     				</div>
         	</div>

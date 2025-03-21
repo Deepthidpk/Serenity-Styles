@@ -9,10 +9,20 @@ if (!isset($_SESSION['username'])) { // Checks if the user is logged in
 }
 //above is for security check ,prevent unauthorized access
 
-// Fetch user data by joining tbl_login and tbl_user
+// Default SQL query
 $sql = "SELECT * FROM tbl_appointment WHERE status='Pending' OR status='Approved'";
-$result = $conn->query($sql);
 
+// Check if a filter month is selected
+if(isset($_POST['filter_month']) && !empty($_POST['filter_month'])) {
+    $selected_month = $_POST['filter_month'];
+    // Format: YYYY-MM
+    $year = substr($selected_month, 0, 4);
+    $month = substr($selected_month, 5, 2);
+    
+    $sql = "SELECT * FROM tbl_appointment WHERE (status='Pending' OR status='Approved') AND YEAR(date) = '$year' AND MONTH(date) = '$month'";
+}
+
+$result = $conn->query($sql);
 
 ?>
 
@@ -115,13 +125,54 @@ $result = $conn->query($sql);
         }
 
         .search-bar {
-    padding: 3px;
-    border-radius: 5px;
-    border: none;
-    background-color: #2d2d2d;
-    color: #fff;
-    width: 220px;
-}
+            padding: 3px;
+            border-radius: 5px;
+            border: none;
+            background-color: #2d2d2d;
+            color: #fff;
+            width: 220px;
+        }
+        
+        .filter-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .month-picker {
+            padding: 5px;
+            border-radius: 5px;
+            border: none;
+            background-color: #2d2d2d;
+            color: #fff;
+        }
+        
+        .filter-btn {
+            padding: 5px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .filter-btn:hover {
+            background-color: #45a049;
+        }
+        
+        .reset-btn {
+            padding: 5px 15px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .reset-btn:hover {
+            background-color: #d32f2f;
+        }
 
         .cards-container {
             display: grid;
@@ -224,7 +275,7 @@ $result = $conn->query($sql);
                 <li><a href="admindashboard.php">Dashboard</a></li>
                 <li><a href="viewservices.php">Services</a></li>
                 <li><a href="viewproducts.php">Products</a></li>
-                <li><a href="viewappointments.php">Appointments</a></li>
+                <li><a href="manage_appointment.php">Appointments</a></li>
                 <li><a href="viewuser.php">Users</a></li>
                 <li><a href="viewreview.php">Reviews</a></li>
                 <li><a href="logout.php">Logout</a></li>
@@ -236,29 +287,24 @@ $result = $conn->query($sql);
             <div class="header">
                 <h2>Manage Users</h2>
                 <input type="text" class="search-bar" placeholder="Search...">
-            
             </div>
+            
+            <!-- Month Filter Form -->
+            <form method="post" action="" class="filter-container">
+                <label for="filter_month">Filter by Month:</label>
+                <input type="month" id="filter_month" name="filter_month" class="month-picker" value="<?php echo isset($_POST['filter_month']) ? $_POST['filter_month'] : ''; ?>">
+                <button type="submit" class="filter-btn">Apply Filter</button>
+                <button type="submit" class="reset-btn" name="reset">Reset</button>
+            </form>
 
             <div class="cards-container">
-
-
             </div>
-
-
-
-
-
-
-
-
-
+            
             <div class="table-container">
                 <table id="dataTable">
                     <thead>
                         <tr>
                             <th>Sl.NO</th>
-                            
-                            
                             <th>Name</th>
                             <th>Phone No</th>
                             <th>Date</th>
@@ -273,7 +319,7 @@ $result = $conn->query($sql);
 if ($result->num_rows > 0) {
     $i = 1;
     while ($row = $result->fetch_assoc()) {
-        $sql="SELECT service_name  FROM tbl_services WHERE service_id=$row[service_id] AND status='active'";
+        $sql="SELECT service_name FROM tbl_services WHERE service_id=$row[service_id] AND status='active'";
         $result1=$conn->query($sql);
         if($result1->num_rows>0){
             $col=$result1->fetch_assoc();
@@ -306,17 +352,13 @@ if ($result->num_rows > 0) {
         $i++;
     }
 } else {
-    echo "<tr><td colspan='6'>No active users found.</td></tr>";
+    echo "<tr><td colspan='8'>No appointments found.</td></tr>";
 }
 ?>
 
                     </tbody>
                 </table>
             </div>
-
-
-
-
         </div>
     </div>
 
@@ -329,13 +371,19 @@ if ($result->num_rows > 0) {
             const searchText = searchBar.value.toLowerCase();
 
             tableRows.forEach(row => {
-                const productName = row.cells[1].textContent.toLowerCase();
-                if (productName.includes(searchText)) {
+                const userName = row.cells[1].textContent.toLowerCase();
+                if (userName.includes(searchText)) {
                     row.style.display = "";
                 } else {
                     row.style.display = "none";
                 }
             });
+        });
+        
+        // Handle reset button
+        document.querySelector('.reset-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.href = 'manage_appointment.php';
         });
     });
 </script>

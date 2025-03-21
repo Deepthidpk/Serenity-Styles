@@ -161,7 +161,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <li class="nav-item"><a href="about.php" class="nav-link">About</a></li>
                     <li class="nav-item"><a href="shop.php" class="nav-link">Products</a></li>
                     <li class="nav-item"><a href="contact.php" class="nav-link">Contact</a></li>
-                    <li class="nav-item"><a href="review.php" class="nav-link">Review</a></li>
+                    <li class="nav-item"><a href="review_view.php" class="nav-link">Review</a></li>
+                    <li class="nav-item"><a href="cart.php" class="nav-link">Cart</a></li>
 
 
 
@@ -194,10 +195,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 ?>
 <?php if (isset($_SESSION['username']) && $_SESSION['username'] === 'user') { ?>
 
-<li class="nav-item cart"><a href="cart.php" class="nav-link"><span
-            class="icon icon-shopping_cart"></span><span
-            class="bag d-flex justify-content-center align-items-center"><small>1</small></span></a>
-</li>
+   
 <?php }
 
 ?>
