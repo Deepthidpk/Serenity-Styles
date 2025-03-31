@@ -23,7 +23,7 @@ $user_id = $_SESSION["user_id"];
 
 // Fetch cart items from the database
 $stmt = $conn->prepare("
-    SELECT c.cart_id, p.product_name, p.price, c.quantity, p.quantity AS qty,p.product_image, (p.price * c.quantity) AS total_price 
+    SELECT c.cart_id,p.product_id, p.product_name, p.price, c.quantity, p.quantity AS qty,p.product_image, (p.price * c.quantity) AS total_price 
     FROM tbl_cart c
     JOIN tbl_products p ON c.product_id = p.product_id
     WHERE c.status='Active' AND c.user_id = ?
@@ -129,13 +129,17 @@ $total = $subtotal + $delivery_fee;
 						    <tbody>
                 <?php if (count($cart_items) > 0): ?>
         <?php 
-            $cart_ids = []; // Initialize an array to store cart IDs
+            $products = []; // Initialize an array to store cart IDs
+            
         ?>
     <?php foreach ($cart_items as $item): ?>
         <?php
            
             $available_stock = $item['qty']; // Available stock from database
-            $cart_ids[] = $item['cart_id']; // Store cart_id in array
+            $products[] = [
+              'product_id' => $item['product_id'], 
+              'quantity' => $item['quantity']
+          ];
             
         ?>
 
@@ -205,7 +209,9 @@ $total = $subtotal + $delivery_fee;
     				</div>
             <form action="checkout.php"method="POST">
 <!-- Hidden input to store cart_id array -->
-<input type="hidden" name="cart_ids" value="<?= htmlspecialchars(json_encode($cart_ids)); ?>">
+<input type="hidden" name="products" value="<?= htmlspecialchars(json_encode($products)); ?>">
+
+<input type="hidden" name="total" value="<?= htmlspecialchars($total); ?>">
     				<input type="submit" value="Proceed to Checkout"class="btn btn-primary py-3 px-4">
             </form>
              

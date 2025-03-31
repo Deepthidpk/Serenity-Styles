@@ -13,8 +13,7 @@ $user_id = $_SESSION["user_id"];
 // Prepare the SQL query to fetch ordered items and their checkout IDs
 $stmt = $conn->prepare("SELECT cp.checkout_id, p.product_id, p.product_name, p.price, p.product_image
     FROM tbl_products p
-    INNER JOIN tbl_cart c ON p.product_id = c.product_id
-    INNER JOIN tbl_checkout_products cp ON c.cart_id = cp.cart_id
+    INNER JOIN tbl_checkout_products cp ON p.product_id = cp.product_id
     INNER JOIN tbl_payment py ON cp.checkout_id = py.checkout_id
     WHERE py.user_id = ?");
 
@@ -68,7 +67,7 @@ foreach ($ordered_items as $item) {
                     <li class="nav-item"><a href="about.php" class="nav-link">About</a></li>
                     <li class="nav-item"><a href="shop.php" class="nav-link">Products</a></li>
                     <li class="nav-item"><a href="contact.php" class="nav-link">Contact</a></li>
-                    <li class="nav-item"><a href="review_view.php" class="nav-link">Cart</a></li>
+                    
                     <li class="nav-item"><a href="cart.php" class="nav-link">Cart</a></li>
                     <li class="nav-item active"><a href="order.php" class="nav-link">Orders</a></li>
                 </ul>
@@ -98,7 +97,7 @@ foreach ($ordered_items as $item) {
                     <?php if (!empty($grouped_items)): ?>
                         <?php foreach ($grouped_items as $checkout_id => $items): ?>
                             <div class="cart-list">
-                                <h3 class="text-center">Checkout ID: <?= htmlspecialchars($checkout_id); ?></h3>
+                               
                                 <table class="table table-bordered">
                                     <thead>
                                         <tr>

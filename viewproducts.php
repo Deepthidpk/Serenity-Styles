@@ -157,6 +157,7 @@ $result = $conn->query($sql);
             <li><a href="viewproducts.php">Products</a></li>
             <li><a href="manage_appointment.php">Appointments</a></li>
             <li><a href="viewuser.php">Users</a></li>
+            <li><a href="vieworders.php">Orders</a></li>
             <li><a href="viewreview.php">Reviews</a></li>
             <li><a href="logout.php">Logout</a></li>
         </ul>
@@ -180,6 +181,7 @@ $result = $conn->query($sql);
                 <thead>
                     <tr>
                         <th>Sl.No</th>
+                        <th>Product Image</th>
                         <th>Product Name</th>
                         <th>Description</th>
                         <th>Quantity</th>
@@ -194,17 +196,20 @@ $result = $conn->query($sql);
                         $i=1;
                         while ($row = $result->fetch_assoc()) {
                             echo "<tr>
-                                <td>" . $i . "</td>
-                                <td>" . htmlspecialchars($row["product_name"]) . "</td>
-                                <td>" . htmlspecialchars($row["pro_description"]) . "</td>
-                                <td>" . htmlspecialchars($row["quantity"]) . "</td>
-                                <td>₹" . htmlspecialchars($row["price"]) . "</td>
-                               
-                                <td>
-                                    <a href='editproduct.php?id=" . $row['product_id'] . "' class='btn btn-sm btn-primary'>Edit</a>
-                                    <a href='deleteproduct.php?id=" . $row['product_id'] . "' class='btn btn-sm btn-danger'>Delete</a>
-                                </td>
-                            </tr>";
+        <td>" . $i . "</td>
+        <td class='image-prod'>
+            <img src='" . htmlspecialchars($row['product_image']) . "' alt='Product Image' width='80' height='80'>
+        </td>
+        <td>" . htmlspecialchars($row["product_name"]) . "</td>
+        <td>" . htmlspecialchars($row["pro_description"]) . "</td>
+        <td>" . htmlspecialchars($row["quantity"]) . "</td>
+        <td>₹" . htmlspecialchars($row["price"]) . "</td>
+        <td>
+            <a href='editproduct.php?id=" . $row['product_id'] . "' class='btn btn-sm btn-primary'>Edit</a>
+            <a href='deleteproduct.php?id=" . $row['product_id'] . "' class='btn btn-sm btn-danger'>Delete</a>
+        </td>
+    </tr>";
+
                             $i++;
                         }
                     } else {

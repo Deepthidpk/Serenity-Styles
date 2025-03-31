@@ -21,65 +21,30 @@ $user_id = isset($_GET['user_id']) ? intval($_GET['user_id']) : null;
 $service_id = isset($_GET['service_id']) ? intval($_GET['service_id']) : null;
 
 $alertMessage = ""; // To store JavaScript alerts
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $user_id = isset($_POST['user_id']) ? intval($_POST['user_id']) : null;
-    $service_id = isset($_POST['service_id']) ? intval($_POST['service_id']) : null;
-    $date = isset($_POST['appointment_date']) ? trim($_POST['appointment_date']) : null;
-    $name = isset($_POST['full_name']) ? trim($_POST['full_name']) : null;
-    $phone_no = isset($_POST['phone']) ? intval($_POST['phone']) : null;
-    $time = isset($_POST['appointment_time']) ? trim($_POST['appointment_time']) : null;
-    $message = isset($_POST['message']) ? htmlspecialchars(trim($_POST['message'])) : null;
-    $status = 'Pending';
-
-    // Check if the specific time slot is already booked
-    $stmt = $conn->prepare("SELECT appointment_id FROM tbl_appointment WHERE date = ? AND time = ?");
-    $stmt->bind_param("ss", $date, $time);
-    $stmt->execute();
-    $stmt->store_result();
-
-    if ($stmt->num_rows > 0) {
-        $alertMessage = "<script>
-            document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Time Slot Unavailable!',
-                    text: 'The selected time slot is already booked. Please choose a different time.',
-                    confirmButtonText: 'OK'
-                });
-            });
-        </script>";
-    } else {
-        // Proceed with booking
-        $stmt = $conn->prepare("INSERT INTO tbl_appointment (user_id, service_id, name, phone_no, date, time, message, status) 
-                                VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("iissssss", $user_id, $service_id, $name, $phone_no, $date, $time, $message, $status);
-
-        if ($stmt->execute()) {
-            $alertMessage = "<script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Appointment Booked!',
-                        text: 'Your appointment has been successfully submitted.',
-                        confirmButtonText: 'OK'
-                    }).then(() => {
-                        window.location.href = 'booknow.php';
-                    });
-                });
-            </script>";
-        } else {
-            $alertMessage = "<script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    Swal.fire('Error!', 'Failed to book appointment. Please try again.', 'error');
-                });
-            </script>";
-        }
-    }
-
-    $stmt->close();
-    $conn->close();
+if(!empty($service_id)){
+  $sql="SELECT price FROM tbl_services WHERE service_id=$service_id";
+  $result=$conn->query($sql);
+  if($result->num_rows>0){
+    $row=$result->fetch_assoc();
+  }
 }
+
+// Function to get booked times for a specific date
+function getBookedAppointmentTimes($conn, $date) {
+  $bookedTimes = array();
+  $stmt = $conn->prepare("SELECT appointment_time FROM tbl_appointments WHERE appointment_date = ? AND status != 'Cancelled'");
+  $stmt->bind_param("s", $date);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  
+  while($row = $result->fetch_assoc()) {
+    $bookedTimes[] = $row['appointment_time'];
+  }
+  
+  $stmt->close();
+  return $bookedTimes;
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -112,8 +77,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <link rel="stylesheet" href="css/flaticon.css">
   <link rel="stylesheet" href="css/icomoon.css">
   <link rel="stylesheet" href="css/style.css">
-<!-- SweetAlert2 -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </head>
 
@@ -239,12 +204,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="book p-4">
           <h3>Book an Appointment</h3>
 
-          <form action="#" method="POST" class="appointment-form">
-            <input type="hidden" name="service_id" value="<?php echo $service_id; ?>">
-            <input type="hidden" name="user_id" value="<?php echo $user_id; ?>">
+          <form action="#" method="POST" id="appointment-form" class="appointment-form">
+          <input type="hidden" id="service_id" name="service_id" value="<?php echo $service_id; ?>">
+          <input type="hidden" id="user_id" name="user_id" value="<?php echo $user_id; ?>">
             <div class="d-md-flex">
               <div class="form-group">
-                <input type="text" name="full_name" class="form-control" placeholder="Full Name">
+                <input type="text" name="full_name" id="full_name" class="form-control" placeholder="Full Name">
               </div>
             </div>
             <div class="d-md-flex">
@@ -280,22 +245,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <option value="07:00 PM">07:00 PM</option>
                     <option value="08:00 PM">08:00 PM</option>
                     <option value="09:00 PM">09:00 PM</option>
-                    
-                    
                   </select>
 
                 </div>
               </div>
               <div class="form-group ml-md-4">
-                <input type="text" name="phone" class="form-control" placeholder="Phone">
+                <input type="text" name="phone" id="phone" class="form-control" placeholder="Phone">
               </div>
             </div>
             <div class="d-md-flex">
               <div class="form-group">
-                <textarea name="message" cols="30" rows="2" class="form-control" placeholder="Message"></textarea>
+                <textarea name="message" id="message" cols="30" rows="2" class="form-control" placeholder="Message"></textarea>
               </div>
               <div class="form-group ml-md-4">
-                <input type="submit" value="Appointment" class="btn btn-white py-3 px-4">
+                <!-- <input type="submit" value="Appointment" class="btn btn-white py-3 px-4"> -->
+                <input type="hidden" id="appointment_amount" value="<?php echo $row['price'];?>"> <!-- Example amount -->
+        <button type="button" id="rzp-button">Pay & Book Appointment</button>
               </div>
             </div>
           </form>
@@ -382,7 +347,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
           <script src="js/google-map.js"></script>
           <script src="js/main.js"></script>
-          
+          <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
           <!-- jQuery & Validation Plugin -->
           <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
           <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
@@ -401,11 +366,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
               }, "Please enter a valid Indian phone number starting with 6, 7, 8, or 9.");
 
               jQuery.validator.addMethod('validDate', function (value, element) {
-                let selectedDate = new Date(value);
-                let today = new Date();
-                today.setHours(0, 0, 0, 0); // Reset time to midnight for comparison
-                return selectedDate >= today;
-              }, "Please select a present or future date.");
+    let selectedDate = new Date(value);
+    let today = new Date();
+    today.setHours(0, 0, 0, 0); // Reset time to midnight for comparison
+
+    let oneYearFromToday = new Date();
+    oneYearFromToday.setFullYear(today.getFullYear() + 1); // Set to exactly 1 year from today
+
+    return selectedDate >= today && selectedDate <= oneYearFromToday;
+}, "Please select a date between today and 1 year from now.");
+
 
               jQuery.validator.addMethod('validTime', function (value, element) {
                 let selectedTime = value.split(':');
@@ -450,7 +420,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                   },
                   appointment_date: {
                     required: "Please select a date",
-                    validDate: "Date must be today or in the future"
+                    validDate: "Please select a date between today and 1 year from now"
                   },
                   appointment_time: {
                     required: "Please select a time",
@@ -471,28 +441,164 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 errorPlacement: function (error, element) {
                   error.addClass("text-danger");
                   error.insertAfter(element);
-                },
-                // submitHandler: function (form) {
-                //     Swal.fire({
-                //         icon: 'success',
-                //         title: 'Appointment Booked!',
-                //         text: 'Your appointment has been successfully submitted.',
-                //         confirmButtonText: 'OK'
-                //     }).then(() => {
-                //         window.location.href = "booknow.php";
-                //     });
-
-                //     return false; // Prevent actual form submission
-                // }
+                }
               });
 
               // Prevent selecting past dates in the input field
               let today = new Date().toISOString().split("T")[0];
               $("#appointment_date").attr("min", today);
+              
+              // Handle date change to fetch booked time slots
+              $("#appointment_date").on('change', function() {
+                var selectedDate = $(this).val();
+                if(selectedDate) {
+                  // Make AJAX call to get booked times
+                  $.ajax({
+                    type: "POST",
+                    url: "get_booked_times.php",
+                    data: { date: selectedDate },
+                    dataType: "json",
+                    success: function(response) {
+                      // Enable all time slots first
+                      $("#appointment_time option").prop("disabled", false);
+                      
+                      // Disable booked time slots
+                      if(response.booked_times) {
+                        $.each(response.booked_times, function(index, time) {
+                          $("#appointment_time option[value='" + time + "']").prop("disabled", true);
+                        });
+                      }
+                      
+                      // If the currently selected time is now disabled, reset selection
+                      if($("#appointment_time").val() && $("#appointment_time option:selected").prop("disabled")) {
+                        $("#appointment_time").val("");
+                      }
+                    },
+                    error: function(xhr, status, error) {
+                      console.error("Error fetching booked times:", error);
+                    }
+                  });
+                }
+              });
+            });
+         
+            document.getElementById('rzp-button').onclick = function (e) {
+                e.preventDefault();
+                var form = document.getElementById('appointment-form');
+                if (!form.checkValidity()) {
+                    alert('Please fill all required fields');
+                    return;
+                }
+
+                var userId = document.getElementById('user_id').value;
+                var serviceId = document.getElementById('service_id').value;
+                var fullName = document.getElementById('full_name').value;
+                var appointmentDate = document.getElementById('appointment_date').value;
+                var appointmentTime = document.getElementById('appointment_time').value;
+                var phone = document.getElementById('phone').value;
+                var message = document.getElementById('message').value;
+                var eamount = document.getElementById('appointment_amount').value * 100; // Convert INR to paise
+                var amount=eamount/2;
+
+                // Check if the selected time slot is still available
+                $.ajax({
+                    type: "POST",
+                    url: "check_time_availability.php",
+                    data: { 
+                        date: appointmentDate,
+                        time: appointmentTime
+                    },
+                    dataType: "json",
+                    success: function(response) {
+                        if(response.available) {
+                            // Proceed with payment if time slot is available
+                            initiatePayment(userId, serviceId, fullName, appointmentDate, appointmentTime, phone, message, amount);
+                        } else {
+                            Swal.fire({
+                                title: "Time Slot Unavailable",
+                                text: "Sorry, this time slot has just been booked by someone else. Please choose another time.",
+                                icon: "warning",
+                                confirmButtonText: "OK"
+                            });
+                            
+                            // Refresh available time slots
+                            $("#appointment_date").trigger('change');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error checking time availability:", error);
+                        Swal.fire({
+                            title: "Error",
+                            text: "Could not verify time slot availability. Please try again.",
+                            icon: "error",
+                            confirmButtonText: "OK"
+                        });
+                    }
+                });
+            };
             
-            
-          });
+            function initiatePayment(userId, serviceId, fullName, appointmentDate, appointmentTime, phone, message, amount) {
+                var options = {
+                    "key": "rzp_test_s8u2UQ54kE7TBA",
+                    "amount": amount,
+                    "currency": "INR",
+                    "name": "Serenity Styles",
+                    "description": "Appointment Booking",
+                    "handler": function (response) {
+                        $.ajax({
+                            type: "POST",
+                            url: "booknow_process.php",
+                            data: {
+                                user_id: userId,
+                                service_id: serviceId,
+                                name: fullName,
+                                appointment_date: appointmentDate,
+                                appointment_time: appointmentTime,
+                                phone: phone,
+                                message: message,
+                                amount: amount / 100, // Convert back to INR
+                                payment_id: response.razorpay_payment_id,
+                                status: 'Pending'
+                            },
+                            success: function (result) {
+                                console.log(result);
+                                if (result.trim() === "success") {
+                                    Swal.fire({
+                                        title: "Payment Successful!",
+                                        text: "Wait for Appointment Confirmation.",
+                                        icon: "success",
+                                        confirmButtonText: "OK"
+                                    }).then(() => {
+                                        window.location.href = "booknow.php";
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        title: "Error!",
+                                        text: "Server error.Try again!",
+                                        icon: "error",
+                                        confirmButtonText: "OK"
+                                    });
+                                }
+                            }
+                        });
+                    },
+                    "prefill": {
+                        "name": fullName,
+                        "contact": phone
+                    },
+                    "theme": {
+                        "color": "#c49b63"
+                    }
+                };
+                
+                var rzp1 = new Razorpay(options);
+                rzp1.open();
+                rzp1.on('payment.failed', function (response) {
+                    alert("Payment Failed: " + response.error.description);
+                });
+            }
           </script>
+          
 <?php
 // Display the alert after the page loads
 echo $alertMessage;

@@ -159,7 +159,9 @@ $past_result = $stmt->get_result();
                                             </div>
                                             
                                             <div class="col-md-3 text-md-right">
-                                                <a href="reschedule-appointment.php?id=<?php echo $appointment['appointment_id']; ?>" class="btn btn-primary py-2 px-3">Reschedule</a>
+                                            <a href="reschedule_appointment.php?id=<?php echo $appointment['appointment_id']; ?>" class="btn btn-primary py-2 px-3">
+    Reschedule
+</a>
                                                 <button class="btn btn-danger py-2 px-3 cancel-appointment" 
                                                         data-id="<?php echo $appointment['appointment_id']; ?>">
                                                     Cancel

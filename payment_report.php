@@ -27,10 +27,11 @@ $stmt = $conn->prepare("
         c.cart_id
     FROM tbl_products p
     INNER JOIN tbl_cart c ON p.product_id = c.product_id
-    INNER JOIN tbl_checkout_products cp ON c.cart_id = cp.cart_id
+    INNER JOIN tbl_checkout_products cp ON p.product_id = cp.product_id
     INNER JOIN tbl_payment py ON cp.checkout_id = py.checkout_id
     WHERE py.user_id = ? AND cp.checkout_id = ?
 ");
+
 
 if (!$stmt) {
     die("Prepare failed: " . $conn->error);
@@ -220,8 +221,8 @@ $total = $subTotal + $taxAmount;
 
 <div class="invoice-container">
     <div class="header">
-        <h1>INVOICE</h1>
-        <h2>SERENITY STYLES</h2>
+        <h1>SERENITY STYLES</h1>
+        
     </div>
     <div class="invoice-details">
         <div class="left">

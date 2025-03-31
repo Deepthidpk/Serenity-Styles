@@ -10,6 +10,7 @@ if (!isset($_SESSION['username'])) {
 
 // Handle form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    
     $service_name = $_POST["service_name"];
     $service_description = $_POST["service_description"];
     $service_price = $_POST["service_price"];
@@ -183,6 +184,7 @@ $result = $conn->query($sql);
             <li><a href="viewproducts.php">Products</a></li>
             <li><a href="manage_appointment.php">Appointments</a></li>
             <li><a href="viewuser.php">Users</a></li>
+            <li><a href="vieworders.php">Orders</a></li>
             <li><a href="viewreview.php">Reviews</a></li>
             <li><a href="logout.php">Logout</a></li>
         </ul>

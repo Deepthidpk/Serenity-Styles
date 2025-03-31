@@ -242,6 +242,7 @@ $result = $conn->query($sql);
                 <li><a href="viewproducts.php">Products</a></li>
                 <li><a href="manage_appointment.php">Appointments</a></li>
                 <li><a href="viewuser.php">Users</a></li>
+                <li><a href="vieworders.php">Orders</a></li>
                 <li><a href="viewreview.php">Reviews</a></li>
                 <li><a href="logout.php">Logout</a></li>
 

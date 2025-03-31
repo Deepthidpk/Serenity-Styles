@@ -1,4 +1,4 @@
-<!-- <?php
+<?php
 include("connect.php");
 if (!empty($_SESSION["email"])) {
 $email=$_SESSION["email"];
@@ -6,10 +6,21 @@ $sql = "SELECT u.name FROM tbl_user AS u JOIN tbl_login AS l ON u.user_id = l.us
 
 $result=$conn->query($sql);
 if ($result->num_rows > 0){
-	$row=$result->fetch_assoc();
+    $row=$result->fetch_assoc();
 }
 }
-?> -->
+
+// Fetch all product categories
+$categorySql = "SELECT * FROM tbl_category WHERE status='available' ORDER BY category_id";
+$categoryResult = $conn->query($categorySql);
+$categories = [];
+
+if ($categoryResult && $categoryResult->num_rows > 0) {
+    while($catRow = $categoryResult->fetch_assoc()) {
+        $categories[] = $catRow;
+    }
+}
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -140,217 +151,88 @@ if ($result->num_rows > 0){
 		    		<div class="row">
 		          <div class="col-md-12 nav-link-wrap mb-5">
 		            <div class="nav ftco-animate nav-pills justify-content-center" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-		            	<a class="nav-link active" id="v-pills-0-tab" data-toggle="pill" href="#v-pills-0" role="tab" aria-controls="v-pills-0" aria-selected="true">Facewash</a>
-
-		              <a class="nav-link" id="v-pills-1-tab" data-toggle="pill" href="#v-pills-1" role="tab" aria-controls="v-pills-1" aria-selected="false">Creams</a>
-
-		              <a class="nav-link" id="v-pills-2-tab" data-toggle="pill" href="#v-pills-2" role="tab" aria-controls="v-pills-2" aria-selected="false">Foundation</a>
-
-		              <a class="nav-link" id="v-pills-3-tab" data-toggle="pill" href="#v-pills-3" role="tab" aria-controls="v-pills-3" aria-selected="false">Shampoo</a>
+		            	<?php
+                        // Dynamic category tabs
+                        if (count($categories) > 0) {
+                            foreach($categories as $index => $category) {
+                                $isActive = ($index === 0) ? 'active' : '';
+                                echo '<a class="nav-link '.$isActive.'" id="v-pills-'.$category['category_id'].'-tab" data-toggle="pill" 
+                                    href="#v-pills-'.$category['category_id'].'" role="tab" 
+                                    aria-controls="v-pills-'.$category['category_id'].'" 
+                                    aria-selected="'.($isActive ? 'true' : 'false').'">'.htmlspecialchars($category['category_name']).'</a>';
+                            }
+                        } else {
+                            echo '<a class="nav-link active" id="v-pills-0-tab" data-toggle="pill" href="#v-pills-0" role="tab" aria-controls="v-pills-0" aria-selected="true">No Categories</a>';
+                        }
+                        ?>
 		            </div>
 		          </div>
 		          <div class="col-md-12 d-flex align-items-center">
 		            
 		            <div class="tab-content ftco-animate" id="v-pills-tabContent">
-
-		              <div class="tab-pane fade show active" id="v-pills-0" role="tabpanel" aria-labelledby="v-pills-0-tab">
-		              	<div class="row">
-						  <?php
-
-// Fetch products from the database
-$sql = "SELECT * FROM tbl_products WHERE category_id=1 AND status='available'";
-$result = $conn->query($sql);
-
-if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        // Escape values to prevent XSS
-        $product_id = htmlspecialchars($row['product_id']);
-        $product_name = htmlspecialchars($row['product_name']);
-        $pro_description = htmlspecialchars($row['pro_description']);
-        
-        $price = htmlspecialchars($row['price']);
-        $product_image = htmlspecialchars($row['product_image']); // Image path from DB
-
-        // Check if image path is empty, use a default image
-        $image_url = !empty($product_image) ? $product_image : 'images/default.jpg';
-
-        // Generate the dynamic product card
-        echo '
-        <div class="col-md-4">
-            <div class="product-entry">
-                <a href="product-details.php?id=' . $product_id . '">
-                    <img src="' . $image_url . '" class="img-fluid" alt="' . $product_name . '" style="width:100%; height:100%;">
-                </a>
-                <div class="text text-center pt-4">
-                    <h3><a href="product-details.php?id=' . $product_id . '">' . $product_name . '</a></h3>
-                    <p>' . $pro_description . '</p>
-                    <p class="price"><span>Rs.' . number_format($price, 2) . '</span></p>
-                  
-                    <form action="singleproduct.php" method="POST">
-                        <input type="hidden" name="product_id" value="' . $product_id . '">
-                        
-                        <button type="submit" class="btn btn-primary btn-outline-primary">View Product</button>
-                    </form>
-                </div>
-            </div>
-        </div>';
-    }
-} else {
-    echo "<p class='text-center'>No products available.</p>";
-}
-
-?>
-
-		              	</div>
-		              </div>
-
-		              <div class="tab-pane fade" id="v-pills-1" role="tabpanel" aria-labelledby="v-pills-1-tab">
-		                <div class="row">
-						<?php
-
-// Fetch products from the database
-$sql1 = "SELECT * FROM tbl_products WHERE category_id=2 AND status='available'";
-$result = $conn->query($sql1);
-
-if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        // Escape values to prevent XSS
-        $product_id = htmlspecialchars($row['product_id']);
-        $product_name = htmlspecialchars($row['product_name']);
-        $pro_description = htmlspecialchars($row['pro_description']);
-        
-        $price = htmlspecialchars($row['price']);
-        $product_image = htmlspecialchars($row['product_image']); // Image path from DB
-
-        // Check if image path is empty, use a default image
-        $image_url = !empty($product_image) ? $product_image : 'images/default.jpg';
-
-        // Generate the dynamic product card
-        echo '
-        <div class="col-md-4">
-            <div class="product-entry">
-                <a href="product-details.php?id=' . $product_id . '">
-                    <img src="' . $image_url . '" class="img-fluid" alt="' . $product_name . '" style="width:100%; height:100%;">
-                </a>
-                <div class="text text-center pt-4">
-                    <h3><a href="product-details.php?id=' . $product_id . '">' . $product_name . '</a></h3>
-                    <p>' . $pro_description . '</p>
-                    <p class="price"><span>Rs.' . number_format($price, 2) . '</span></p>
-                  
-                    <form action="singleproduct.php" method="POST">
-                        <input type="hidden" name="product_id" value="' . $product_id . '">
-                        
-                        <button type="submit" class="btn btn-primary btn-outline-primary">View Product</button>
-                    </form>
-                </div>
-            </div>
-        </div>';
-    }
-} else {
-    echo "<p class='text-center'>No products available.</p>";
-}
-
-?>
-		              	</div>
-		              </div>
-					  <div class="tab-pane fade" id="v-pills-2" role="tabpanel" aria-labelledby="v-pills-2-tab">
-					  <div class="row">
-		              <?php
-
-// Fetch products from the database
-$sql2 = "SELECT * FROM tbl_products WHERE category_id=3 AND status='available'";
-$result = $conn->query($sql2);
-
-if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        // Escape values to prevent XSS
-        $product_id = htmlspecialchars($row['product_id']);
-        $product_name = htmlspecialchars($row['product_name']);
-        $pro_description = htmlspecialchars($row['pro_description']);
-        
-        $price = htmlspecialchars($row['price']);
-        $product_image = htmlspecialchars($row['product_image']); // Image path from DB
-
-        // Check if image path is empty, use a default image
-        $image_url = !empty($product_image) ? $product_image : 'images/default.jpg';
-
-        // Generate the dynamic product card
-        echo '
-        <div class="col-md-4">
-            <div class="product-entry">
-                <a href="product-details.php?id=' . $product_id . '">
-                    <img src="' . $image_url . '" class="img-fluid" alt="' . $product_name . '" style="width:100%; height:100%;">
-                </a>
-                <div class="text text-center pt-4">
-                    <h3><a href="product-details.php?id=' . $product_id . '">' . $product_name . '</a></h3>
-                    <p>' . $pro_description . '</p>
-                    <p class="price"><span>Rs.' . number_format($price, 2) . '</span></p>
-                  
-                    <form action="singleproduct.php" method="POST">
-                        <input type="hidden" name="product_id" value="' . $product_id . '">
-                        
-                        <button type="submit" class="btn btn-primary btn-outline-primary">View Product</button>
-                    </form>
-                </div>
-            </div>
-        </div>';
-    }
-} else {
-    echo "<p class='text-center'>No products available.</p>";
-}
-
-?>
-		              	</div>
-		              </div>
-
-		              <div class="tab-pane fade" id="v-pills-3" role="tabpanel" aria-labelledby="v-pills-3-tab">
-		                <div class="row">
-						<?php
-
-// Fetch products from the database
-$sql2 = "SELECT * FROM tbl_products WHERE category_id=4 AND status='available'";
-$result = $conn->query($sql2);
-
-if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        // Escape values to prevent XSS
-        $product_id = htmlspecialchars($row['product_id']);
-        $product_name = htmlspecialchars($row['product_name']);
-        $pro_description = htmlspecialchars($row['pro_description']);
-        
-        $price = htmlspecialchars($row['price']);
-        $product_image = htmlspecialchars($row['product_image']); // Image path from DB
-
-        // Check if image path is empty, use a default image
-        $image_url = !empty($product_image) ? $product_image : 'images/default.jpg';
-
-        // Generate the dynamic product card
-        echo '
-        <div class="col-md-4">
-            <div class="product-entry">
-                <a href="product-details.php?id=' . $product_id . '">
-                    <img src="' . $image_url . '" class="img-fluid" alt="' . $product_name . '" style="width:100%; height:100%;">
-                </a>
-                <div class="text text-center pt-4">
-                    <h3><a href="product-details.php?id=' . $product_id . '">' . $product_name . '</a></h3>
-                    <p>' . $pro_description . '</p>
-                    <p class="price"><span>Rs.' . number_format($price, 2) . '</span></p>
-                  
-                    <form action="singleproduct.php" method="POST">
-                        <input type="hidden" name="product_id" value="' . $product_id . '">
-                        
-                        <button type="submit" class="btn btn-primary btn-outline-primary">View Product</button>
-                    </form>
-                </div>
-            </div>
-        </div>';
-    }
-} else {
-    echo "<p class='text-center'>No products available.</p>";
-}
-
-?>
-		              		
+                    <?php
+                    // Dynamic tab content
+                    if (count($categories) > 0) {
+                        foreach($categories as $index => $category) {
+                            $isActive = ($index === 0) ? 'show active' : '';
+                            echo '<div class="tab-pane fade '.$isActive.'" id="v-pills-'.$category['category_id'].'" 
+                                role="tabpanel" aria-labelledby="v-pills-'.$category['category_id'].'-tab">
+                                <div class="row">';
+                            
+                            // Fetch products for this category
+                            $productSql = "SELECT * FROM tbl_products WHERE category_id=".$category['category_id']." AND status='available'";
+                            $productResult = $conn->query($productSql);
+                            
+                            if ($productResult && $productResult->num_rows > 0) {
+                                while ($productRow = $productResult->fetch_assoc()) {
+                                    // Escape values to prevent XSS
+                                    $product_id = htmlspecialchars($productRow['product_id']);
+                                    $product_name = htmlspecialchars($productRow['product_name']);
+                                    $pro_description = htmlspecialchars($productRow['pro_description']);
+                                    $price = htmlspecialchars($productRow['price']);
+                                    $product_image = htmlspecialchars($productRow['product_image']);
+                                    
+                                    // Check if image path is empty, use a default image
+                                    $image_url = !empty($product_image) ? $product_image : 'images/default.jpg';
+                                    
+                                    // Generate the dynamic product card
+                                    echo '
+                                    <div class="col-md-4">
+                                        <div class="product-entry">
+                                            <a href="product-details.php?id=' . $product_id . '">
+                                                <img src="' . $image_url . '" class="img-fluid" alt="' . $product_name . '" style="width:100%; height:100%;">
+                                            </a>
+                                            <div class="text text-center pt-4">
+                                                <h3><a href="product-details.php?id=' . $product_id . '">' . $product_name . '</a></h3>
+                                                <p>' . $pro_description . '</p>
+                                                <p class="price"><span>Rs.' . number_format($price, 2) . '</span></p>
+                                              
+                                                <form action="singleproduct.php" method="POST">
+                                                    <input type="hidden" name="product_id" value="' . $product_id . '">
+                                                    
+                                                    <button type="submit" class="btn btn-primary btn-outline-primary">View Product</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>';
+                                }
+                            } else {
+                                echo "<p class='text-center'>No products available in this category.</p>";
+                            }
+                            
+                            echo '</div></div>';
+                        }
+                    } else {
+                        echo '<div class="tab-pane fade show active" id="v-pills-0" role="tabpanel" aria-labelledby="v-pills-0-tab">
+                                <div class="row">
+                                    <p class="text-center w-100">No categories available.</p>
+                                </div>
+                              </div>';
+                    }
+                    ?>
+		            </div>
+		          </div>
+		        </div>
 		      </div>
 		    </div>
     	</div>

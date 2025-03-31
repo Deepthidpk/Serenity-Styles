@@ -277,6 +277,7 @@ $result = $conn->query($sql);
                 <li><a href="viewproducts.php">Products</a></li>
                 <li><a href="manage_appointment.php">Appointments</a></li>
                 <li><a href="viewuser.php">Users</a></li>
+                <li><a href="vieworders.php">Orders</a></li>
                 <li><a href="viewreview.php">Reviews</a></li>
                 <li><a href="logout.php">Logout</a></li>
 
@@ -337,13 +338,14 @@ if ($result->num_rows > 0) {
         
         // Check user status to determine which button to show
         if ($row['status'] == 'Pending') {
-            echo "<a href='update_appointmentstatus.php?id=" . $row['appointment_id'] . "&status=Cancelled' class='btn btn-xs btn-danger'>Reject</a>";
+            echo "<a href='update_appointmentstatus.php?id=" . $row['appointment_id'] . "&status=Rejected' class='btn btn-xs btn-danger'>Reject</a>";
          
             echo "<a href='update_appointmentstatus.php?id=" . $row['appointment_id'] . "&status=Approved' class='btn btn-xs btn-success'>Accept</a>";
         }
         else{
             if ($row['status'] == 'Approved') {
                 echo "<button  class='btn btn-xs btn-success' disabled>Approved</button>";
+                echo "<a href='update_appointmentstatus.php?id=" . $row['appointment_id'] . "&status=Cancelled' class='btn btn-xs btn-danger'>Cancelled</a>";
             }
 
         }

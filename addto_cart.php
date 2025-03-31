@@ -27,6 +27,7 @@ if(isset($_POST['product_id'])){
     }
 
     if ($conn->query($sql)) {
+        
         echo "<script>
               setTimeout(function() {
                   Swal.fire({

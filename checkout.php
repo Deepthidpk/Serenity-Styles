@@ -1,10 +1,8 @@
 <?php
 include('connect.php');
 $user_id = $_SESSION['user_id'];
-$sql = "SELECT SUM(unit_price) AS total FROM tbl_cart WHERE status='Active' AND user_id=$user_id";
-$result = $conn->query($sql);
-$row = $result->fetch_assoc();
-$cart_ids = json_decode($_POST['cart_ids'], true); // Decode JSON back to array
+$total = $_POST['total'];
+$products = json_decode($_POST['products'], true); // Decode JSON back to array
 
 
 ?>
@@ -70,7 +68,7 @@ $cart_ids = json_decode($_POST['cart_ids'], true); // Decode JSON back to array
             </div>
           </li>
           <li class="nav-item"><a href="contact.php" class="nav-link">Contact</a></li>
-          <li class="nav-item"><a href="booknow.php" class="nav-link">Book Now</a></li>
+
           <li class="nav-item cart"><a href="cart.php" class="nav-link"><span
                 class="icon icon-shopping_cart"></span><span
                 class="bag d-flex justify-content-center align-items-center"><small>1</small></span></a></li>
@@ -169,8 +167,9 @@ $cart_ids = json_decode($_POST['cart_ids'], true); // Decode JSON back to array
 
 
             </div>
-            <input type="hidden" name="cart_ids" id="cart_ids"
-              value="<?= htmlspecialchars(json_encode($cart_ids)); ?>">
+            <input type="hidden" name="products" id="products"
+              value="<?= htmlspecialchars(json_encode($products)); ?>">
+            
           </form><!-- END -->
 
 
@@ -181,14 +180,14 @@ $cart_ids = json_decode($_POST['cart_ids'], true); // Decode JSON back to array
                 <h3 class="billing-heading mb-4">Cart Total</h3>
                 <p class="d-flex">
                   <span>Subtotal</span>Rs.&nbsp
-                  <span><?php echo $row['total']; ?></span>
+                  <span><?php echo $total; ?></span>
                 </p>
 
 
                 <hr>
                 <p class="d-flex total-price">
                   <span>Total</span>Rs.&nbsp
-                  <span id="total-amount"><?php echo $row['total']; ?></span>
+                  <span id="total-amount"><?php echo $total; ?></span>
                 </p>
               </div>
             </div>
@@ -308,7 +307,7 @@ $cart_ids = json_decode($_POST['cart_ids'], true); // Decode JSON back to array
 
           <script>
             $(document).ready(function () {
-              
+
               var quantitiy = 0;
               $('.quantity-right-plus').click(function (e) {
 
@@ -452,20 +451,20 @@ $cart_ids = json_decode($_POST['cart_ids'], true); // Decode JSON back to array
               var phone = document.getElementById('phone').value;
               var totalAmountText = document.getElementById('total-amount').innerText.trim(); // Remove spaces
 
-// Extract the numeric part, leaving the decimal point intact
-var cleanedAmount = totalAmountText.replace(/[^\d.]/g, '');
+              // Extract the numeric part, leaving the decimal point intact
+              var cleanedAmount = totalAmountText.replace(/[^\d.]/g, '');
 
-// Ensure correct conversion (1 Rs = 100 paise)
-var amount = parseFloat(cleanedAmount) * 100; // Multiply by 100 to convert rupees to paise
+              // Ensure correct conversion (1 Rs = 100 paise)
+              var amount = parseFloat(cleanedAmount) * 100; // Multiply by 100 to convert rupees to paise
 
-var eamount = 0;
-if (!isNaN(amount)) {
-    eamount = Math.round(amount); // Round the result to get whole paise
-} else {
-    console.error("Invalid amount extracted:", cleanedAmount);
-}
+              var eamount = 0;
+              if (!isNaN(amount)) {
+                eamount = Math.round(amount); // Round the result to get whole paise
+              } else {
+                console.error("Invalid amount extracted:", cleanedAmount);
+              }
 
-              var cart_ids = document.getElementById('cart_ids').value;
+              var products = document.getElementById('products').value;
 
 
               var options = {
@@ -492,7 +491,7 @@ if (!isNaN(amount)) {
                       phone: phone,
                       amount: eamount / 100, // Convert back to INR
                       payment_id: payment_id,
-                      cart_ids: cart_ids
+                      products: products
                     },
                     success: function (result) {
                       if (result.trim() === "success") {
@@ -509,7 +508,7 @@ if (!isNaN(amount)) {
                   "contact": phone
                 },
                 "theme": {
-                  "color": "#c49b63"
+                  "color": "black"
                 }
               };
 

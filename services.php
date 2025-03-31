@@ -1,8 +1,6 @@
 <?php
 include("connect.php");
 
-
-
 // if(!isset($_SESSION['username']) || $_SESSION['username']!="user"){ // Checks if the user is logged in
 
 // 	// Unset all session variables
@@ -24,7 +22,20 @@ if (!empty($_SESSION["email"])) {
   }
 }
 
+// Fetch all active service categories
+$categorySql = "SELECT DISTINCT cs.catservice_id, cs.cat_name 
+                FROM tbl_category_services cs 
+                INNER JOIN tbl_services s ON cs.catservice_id = s.catservice_id 
+                WHERE s.status = 'active' 
+                ORDER BY cs.catservice_id";
+$categoryResult = $conn->query($categorySql);
+$categories = [];
 
+if ($categoryResult && $categoryResult->num_rows > 0) {
+    while($catRow = $categoryResult->fetch_assoc()) {
+        $categories[] = $catRow;
+    }
+}
 ?>
 
 
@@ -184,271 +195,70 @@ if (!empty($_SESSION["email"])) {
             <div class="col-md-12 nav-link-wrap mb-5">
               <div class="nav ftco-animate nav-pills justify-content-center" id="v-pills-tab" role="tablist"
                 aria-orientation="vertical">
-                <a class="nav-link active" id="v-pills-0-tab" data-toggle="pill" href="#v-pills-0" role="tab"
-                  aria-controls="v-pills-0" aria-selected="true">Haircut</a>
-
-                <a class="nav-link" id="v-pills-1-tab" data-toggle="pill" href="#v-pills-1" role="tab"
-                  aria-controls="v-pills-1" aria-selected="false">Facial</a>
-
-                <a class="nav-link" id="v-pills-2-tab" data-toggle="pill" href="#v-pills-2" role="tab"
-                  aria-controls="v-pills-2" aria-selected="false">Manicure</a>
-
-                <a class="nav-link" id="v-pills-3-tab" data-toggle="pill" href="#v-pills-3" role="tab"
-                  aria-controls="v-pills-3" aria-selected="false">Makeup</a>
-
-                  <a class="nav-link" id="v-pills-4-tab" data-toggle="pill" href="#v-pills-4" role="tab"
-                  aria-controls="v-pills-4" aria-selected="false">Brow and Lash</a>
+                <?php
+                // Dynamic category tabs
+                foreach($categories as $index => $category) {
+                  $isActive = ($index === 0) ? 'active' : '';
+                  echo '<a class="nav-link '.$isActive.'" id="v-pills-'.$category['catservice_id'].'-tab" data-toggle="pill" 
+                      href="#v-pills-'.$category['catservice_id'].'" role="tab" 
+                      aria-controls="v-pills-'.$category['catservice_id'].'" 
+                      aria-selected="'.($isActive ? 'true' : 'false').'">'.htmlspecialchars($category['cat_name']).'</a>';
+                }
+                ?>
               </div>
             </div>
             <div class="col-md-12 d-flex align-items-center">
 
               <div class="tab-content ftco-animate" id="v-pills-tabContent">
-
-                <div class="tab-pane fade show active" id="v-pills-0" role="tabpanel" aria-labelledby="v-pills-0-tab">
-                  <div class="row">
-                    <?php
-
-
-                    // Fetch services from the database
-                    $sql = "SELECT * FROM tbl_services WHERE catservice_id=1 AND status='active'";
-                    $result = $conn->query($sql);
-
-                    if ($result->num_rows > 0) {
-                      while ($row = $result->fetch_assoc()) {
-                        // Escape values to prevent XSS
-                        $service_id = htmlspecialchars($row['service_id']);
-                        $service_name = htmlspecialchars($row['service_name']);
-                        $service_description = htmlspecialchars($row['service_description']);
-                        $service_price = htmlspecialchars($row['price']);
-                        $service_image = htmlspecialchars($row['service_image']); // Assuming image URL is stored in DB
-                    
-                        // Generate the dynamic service card
-                        // Generate the dynamic service card
-echo '
-<div class="col-md-3">
-    <div class="menu-entry">
-        <a href="service-details.php?id=' . htmlspecialchars($service_id) . '" class="img" 
-           style="background-image: url(' . htmlspecialchars($service_image) . ');"></a>
-        <div class="text text-center pt-4">
-            <h3>
-                <a href="service-details.php?id=' . htmlspecialchars($service_id) . '">
-                    ' . htmlspecialchars($service_name) . '
-                </a>
-            </h3>
-            <p>' . htmlspecialchars($service_description) . '</p>
-            <p class="price"><span>Rs. ' . number_format($service_price, 2) . '</span></p>
-            
-            <!-- Booking Form (POST Method) -->
-            <form action="booknow.php" method="GET">
-                <input type="hidden" name="service_id" value="' . htmlspecialchars($service_id) . '">
-                <input type="hidden" name="user_id" value="' . (isset($_SESSION['user_id']) ? htmlspecialchars($_SESSION['user_id']) : '') . '"> 
-                <button type="submit" class="btn btn-primary btn-outline-primary">Book Appointment</button>
-            </form>
-        </div>
-    </div>
-</div>';
-
-                      }
-                    } else {
-                      echo "<p>No services available.</p>";
+                <?php
+                // Dynamic tab content
+                foreach($categories as $index => $category) {
+                  $isActive = ($index === 0) ? 'show active' : '';
+                  echo '<div class="tab-pane fade '.$isActive.'" id="v-pills-'.$category['catservice_id'].'" 
+                      role="tabpanel" aria-labelledby="v-pills-'.$category['catservice_id'].'-tab">
+                      <div class="row">';
+                  
+                  // Fetch services for this category
+                  $serviceSql = "SELECT * FROM tbl_services WHERE catservice_id=".$category['catservice_id']." AND status='active'";
+                  $serviceResult = $conn->query($serviceSql);
+                  
+                  if ($serviceResult && $serviceResult->num_rows > 0) {
+                    while ($serviceRow = $serviceResult->fetch_assoc()) {
+                      // Escape values to prevent XSS
+                      $service_id = htmlspecialchars($serviceRow['service_id']);
+                      $service_name = htmlspecialchars($serviceRow['service_name']);
+                      $service_description = htmlspecialchars($serviceRow['service_description']);
+                      $service_price = htmlspecialchars($serviceRow['price']);
+                      $service_image = htmlspecialchars($serviceRow['service_image']);
+                      
+                      // Generate the dynamic service card
+                      echo '
+                      <div class="col-md-3">
+                          <div class="menu-entry">
+                              <a href="service-details.php?id='.$service_id.'" class="img" 
+                                style="background-image: url('.$service_image.');"></a>
+                              <div class="text text-center pt-4">
+                                  <h3><a href="service-details.php?id='.$service_id.'">'.$service_name.'</a></h3>
+                                  <p>'.$service_description.'</p>
+                                  <p class="price"><span>Rs. '.number_format($service_price, 2).'</span></p>
+                                  
+                                  <!-- Booking Form (GET Method) -->
+                                  <form action="booknow.php" method="GET">
+                                      <input type="hidden" name="service_id" value="'.$service_id.'">
+                                      <input type="hidden" name="user_id" value="'.(isset($_SESSION['user_id']) ? htmlspecialchars($_SESSION['user_id']) : '').'"> 
+                                      <button type="submit" class="btn btn-primary btn-outline-primary">Book Appointment</button>
+                                  </form>
+                              </div>
+                          </div>
+                      </div>';
                     }
-
-
-                    ?>
-
-                  </div>
-                </div>
-
-                <div class="tab-pane fade" id="v-pills-1" role="tabpanel" aria-labelledby="v-pills-1-tab">
-                  <div class="row">
-                    <?php
-
-
-                    // Fetch services from the database
-                    $sql2 = "SELECT * FROM tbl_services WHERE catservice_id=2 AND status='active'";
-                    $result = $conn->query($sql2);
-
-                    if ($result->num_rows > 0) {
-                      while ($row = $result->fetch_assoc()) {
-                        // Escape values to prevent XSS
-                        $service_id = htmlspecialchars($row['service_id']);
-                        $service_name = htmlspecialchars($row['service_name']);
-                        $service_description = htmlspecialchars($row['service_description']);
-                        $service_price = htmlspecialchars($row['price']);
-                        $service_image = htmlspecialchars($row['service_image']); // Assuming image URL is stored in DB
-                    
-                        // Generate the dynamic service card
-                        echo '
-        <div class="col-md-4">
-            <div class="menu-entry">
-                <a href="service-details.php?id=' . $service_id . '" class="img" style="background-image: url(' . $service_image . ');"></a>
-                <div class="text text-center pt-4">
-                    <h3><a href="service-details.php?id=' . $service_id . '">' . $service_name . '</a></h3>
-                    <p>' . $service_description . '</p>
-                    <p class="price"><span>Rs.' . $service_price . '</span></p>
-                     <!-- Booking Form (GET Method) -->
-            <form action="booknow.php" method="GET">
-                <input type="hidden" name="service_id" value="' . htmlspecialchars($service_id) . '">
-                <input type="hidden" name="user_id" value="' . (isset($_SESSION['user_id']) ? htmlspecialchars($_SESSION['user_id']) : '') . '"> 
-                <button type="submit" class="btn btn-primary btn-outline-primary">Book Appointment</button>
-            </form>
-                </div>
-            </div>
-        </div>';
-                      }
-                    } else {
-                      echo "<p>No services available.</p>";
-                    }
-
-
-                    ?>
-                  </div>
-                </div>
-
-                <div class="tab-pane fade" id="v-pills-2" role="tabpanel" aria-labelledby="v-pills-2-tab">
-                  <div class="row">
-                    <?php
-
-
-                    // Fetch services from the database
-                    $sql3 = "SELECT * FROM tbl_services WHERE catservice_id=3 AND status='active'";
-                    $result = $conn->query($sql3);
-
-                    if ($result->num_rows > 0) {
-                      while ($row = $result->fetch_assoc()) {
-                        // Escape values to prevent XSS
-                        $service_id = htmlspecialchars($row['service_id']);
-                        $service_name = htmlspecialchars($row['service_name']);
-                        $service_description = htmlspecialchars($row['service_description']);
-                        $service_price = htmlspecialchars($row['price']);
-                        $service_image = htmlspecialchars($row['service_image']); // Assuming image URL is stored in DB
-                    
-                        // Generate the dynamic service card
-                        echo '
-        <div class="col-md-3">
-            <div class="menu-entry">
-                <a href="service-details.php?id=' . $service_id . '" class="img" style="background-image: url(' . $service_image . ');"></a>
-                <div class="text text-center pt-4">
-                    <h3><a href="service-details.php?id=' . $service_id . '">' . $service_name . '</a></h3>
-                    <p>' . $service_description . '</p>
-                    <p class="price"><span>Rs.' . $service_price . '</span></p>
-                     <!-- Booking Form (GET Method) -->
-            <form action="booknow.php" method="GET">
-                <input type="hidden" name="service_id" value="' . htmlspecialchars($service_id) . '">
-                <input type="hidden" name="user_id" value="' . (isset($_SESSION['user_id']) ? htmlspecialchars($_SESSION['user_id']) : '') . '"> 
-                <button type="submit" class="btn btn-primary btn-outline-primary">Book Appointment</button>
-            </form>
-                </div>
-            </div>
-        </div>';
-                      }
-                    } else {
-                      echo "<p>No services available.</p>";
-                    }
-
-
-                    ?>
-                  </div>
-                </div>
-
-                <div class="tab-pane fade" id="v-pills-3" role="tabpanel" aria-labelledby="v-pills-3-tab">
-                  <div class="row">
-                    <?php
-
-
-                    // Fetch services from the database
-                    $sql4 = "SELECT * FROM tbl_services WHERE catservice_id=4 AND status='active'";
-                    $result = $conn->query($sql4);
-
-                    if ($result->num_rows > 0) {
-                      while ($row = $result->fetch_assoc()) {
-                        // Escape values to prevent XSS
-                        $service_id = htmlspecialchars($row['service_id']);
-                        $service_name = htmlspecialchars($row['service_name']);
-                        $service_description = htmlspecialchars($row['service_description']);
-                        $service_price = htmlspecialchars($row['price']);
-                        $service_image = htmlspecialchars($row['service_image']); // Assuming image URL is stored in DB
-                    
-                        // Generate the dynamic service card
-                        echo '
-        <div class="col-md-3">
-            <div class="menu-entry">
-                <a href="service-details.php?id=' . $service_id . '" class="img" style="background-image: url(' . $service_image . ');"></a>
-                <div class="text text-center pt-4">
-                    <h3><a href="service-details.php?id=' . $service_id . '">' . $service_name . '</a></h3>
-                    <p>' . $service_description . '</p>
-                    <p class="price"><span>Rs.' . $service_price . '</span></p>
-                    
-                     <!-- Booking Form (GET Method) -->
-            <form action="booknow.php" method="GET">
-                <input type="hidden" name="service_id" value="' . htmlspecialchars($service_id) . '">
-                <input type="hidden" name="user_id" value="' . (isset($_SESSION['user_id']) ? htmlspecialchars($_SESSION['user_id']) : '') . '"> 
-                <button type="submit" class="btn btn-primary btn-outline-primary">Book Appointment</button>
-            </form>
-                </div>
-            </div>
-        </div>';
-                      }
-                    } else {
-                      echo "<p>No services available.</p>";
-                    }
-
-
-                    ?>
-                  </div>
-                </div>
-
-
-                <div class="tab-pane fade" id="v-pills-4" role="tabpanel" aria-labelledby="v-pills-4-tab">
-                  <div class="row">
-                    <?php
-
-
-                    // Fetch services from the database
-                    $sql4 = "SELECT * FROM tbl_services WHERE catservice_id=6 AND status='active'";
-                    $result = $conn->query($sql4);
-
-                    if ($result->num_rows > 0) {
-                      while ($row = $result->fetch_assoc()) {
-                        // Escape values to prevent XSS
-                        $service_id = htmlspecialchars($row['service_id']);
-                        $service_name = htmlspecialchars($row['service_name']);
-                        $service_description = htmlspecialchars($row['service_description']);
-                        $service_price = htmlspecialchars($row['price']);
-                        $service_image = htmlspecialchars($row['service_image']); // Assuming image URL is stored in DB
-                    
-                        // Generate the dynamic service card
-                        echo '
-        <div class="col-md-3">
-            <div class="menu-entry">
-                <a href="service-details.php?id=' . $service_id . '" class="img" style="background-image: url(' . $service_image . ');"></a>
-                <div class="text text-center pt-4">
-                    <h3><a href="service-details.php?id=' . $service_id . '">' . $service_name . '</a></h3>
-                    <p>' . $service_description . '</p>
-                    <p class="price"><span>Rs.' . $service_price . '</span></p>
-                    
-                     <!-- Booking Form (GET Method) -->
-            <form action="booknow.php" method="GET">
-                <input type="hidden" name="service_id" value="' . htmlspecialchars($service_id) . '">
-                <input type="hidden" name="user_id" value="' . (isset($_SESSION['user_id']) ? htmlspecialchars($_SESSION['user_id']) : '') . '"> 
-                <button type="submit" class="btn btn-primary btn-outline-primary">Book Appointment</button>
-            </form>
-                </div>
-            </div>
-        </div>';
-                      }
-                    } else {
-                      echo "<p>No services available.</p>";
-                    }
-
-
-                    ?>
-                  </div>
-                </div>
-
-
-
-
+                  } else {
+                    echo "<p>No services available in this category.</p>";
+                  }
+                  
+                  echo '</div></div>';
+                }
+                ?>
               </div>
             </div>
           </div>

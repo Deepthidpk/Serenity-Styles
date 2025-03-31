@@ -105,7 +105,13 @@ $row=$result->fetch_assoc();
 	                   <i class="icon-minus"></i>
 	                	</button>
 	            		</span>
-	             	<input type="text" id="quantity" name="quantity" class="form-control input-number" value="1" min="1" max="100">
+                  <form action="checkout_singleproduct.php" method="POST">
+                        <input type="hidden" name="product_id"value= <?php echo $row['product_id']; ?>>
+	             	<input type="text" id="quantity" name="quantity"value="1" min="1" max="<?php echo $row['quantity']; ?>">
+                       
+                        <button type="submit" class="btn btn-primary btn-outline-primary">Buy Now</button>
+
+                    </form>
 	             	<span class="input-group-btn ml-2">
 	                	<button type="button" class="quantity-right-plus btn" data-type="plus" data-field="">
 	                     <i class="icon-plus"></i>
@@ -115,15 +121,12 @@ $row=$result->fetch_assoc();
           	</div>
             <form action="addto_cart.php" method="POST">
                         <input type="hidden" name="product_id" value= <?php echo $row['product_id']; ?>  >
+                        <input type="hidden" id="qty"name="qty" value="1">
                         
                         <button type="submit" class="btn btn-primary btn-outline-primary">Add to Cart</button>
                     </form>
-                    <form action="checkout.php" method="POST">
-                        <input type="hidden" name="product_id" value="' . $product_id . '">
-                        
-                        <button type="submit" class="btn btn-primary btn-outline-primary">Buy Now</button>
-                    </form>
-          	
+                    
+          	 <input type="hidden" name="maxqty"id="maxqty"value= <?php echo $row['quantity']; ?>>
             
     			</div>
     		</div>
@@ -202,7 +205,11 @@ $row=$result->fetch_assoc();
 
   <script>
 		$(document).ready(function(){
+      
+    
 
+
+var maxquantity=$('#maxqty').val();
 		var quantitiy=0;
 		   $('.quantity-right-plus').click(function(e){
 		        
@@ -212,9 +219,10 @@ $row=$result->fetch_assoc();
 		        var quantity = parseInt($('#quantity').val());
 		        
 		        // If is not undefined
-		            
+		            if(quantity<maxquantity){
 		            $('#quantity').val(quantity + 1);
-
+                $('#qty').val($('#quantity').val());
+                }
 		          
 		            // Increment
 		        
@@ -229,8 +237,9 @@ $row=$result->fetch_assoc();
 		        // If is not undefined
 		      
 		            // Increment
-		            if(quantity>0){
+		            if(quantity>1){
 		            $('#quantity').val(quantity - 1);
+                $('#qty').val($('#quantity').val());
 		            }
 		    });
 		    
