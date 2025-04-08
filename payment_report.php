@@ -23,7 +23,7 @@ $stmt = $conn->prepare("
         p.price AS cost, 
         p.product_image, 
         p.quantity AS available_stock,
-        c.quantity AS ordered_qty,
+        cp.quantity AS ordered_qty,
         c.cart_id
     FROM tbl_products p
     INNER JOIN tbl_cart c ON p.product_id = c.product_id

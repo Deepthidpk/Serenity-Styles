@@ -12,7 +12,13 @@ $client->setRedirectUri("http://localhost/coffeeduplicate/userindex.php");
 $client->addScope('email');
 $client->addScope('profile');
 
-if(!$_SESSION["access_token"]){
+// Initialize the session variable if not set
+if (!isset($_SESSION["access_token"])) {
+    $_SESSION["access_token"] = null;
+}
+
+// Prevent reloading issue by checking if access token is set
+if ($_SESSION["access_token"] === null) {
 
 
 // Exchange the authorization code for an access token
@@ -353,22 +359,22 @@ $stmt->close();
     				<div class="row">
     					<div class="col-md-6">
     						<div class="menu-entry">
-		    					<a href="#" class="img" style="background-image: url(images/niveafacewash2.jpg);"></a>
+		    					<a href="#" class="img" style="background-image: url(images/niveafacewash3.png);"></a>
 		    				</div>
     					</div>
     					<div class="col-md-6">
     						<div class="menu-entry mt-lg-4">
-		    					<a href="#" class="img" style="background-image: url(images/olaycream3.jpg);"></a>
+		    					<a href="#" class="img" style="background-image: url(images/lakme1.png);"></a>
 		    				</div>
     					</div>
     					<div class="col-md-6">
     						<div class="menu-entry">
-		    					<a href="#" class="img" style="background-image: url(images/macfoundation.jpg);"></a>
+		    					<a href="#" class="img" style="background-image: url(images/macfoundation1.png);"></a>
 		    				</div>
     					</div>
     					<div class="col-md-6">
     						<div class="menu-entry mt-lg-4">
-		    					<a href="#" class="img" style="background-image: url(images/aveeno.jpg);"></a>
+		    					<a href="#" class="img" style="background-image: url(images/lushshampoo1.png);"></a>
 		    				</div>
     					</div>
     				</div>
@@ -404,7 +410,7 @@ $stmt->close();
     					<div class="text text-center pt-4">
     						<h3><a href="#">Haircut</a></h3>
     						<p>Our skilled stylists craft the perfect cut for a fresh, flattering look that complements your style.</p>
-    						<p class="price"><span>$5.90</span></p>
+    						
     						<p><a href="services.php" class="btn btn-primary btn-outline-primary">View Haircut</a></p>
     					</div>
     				</div>
@@ -415,7 +421,7 @@ $stmt->close();
     					<div class="text text-center pt-4">
     						<h3><a href="#">Facial</a></h3>
     						<p>Our rejuvenating facials cleanse, hydrate, and refresh your skin for a radiant, glowing complexion.</p>
-    						<p class="price"><span>$5.90</span></p>
+    						
     						<p><a href="services.html" class="btn btn-primary btn-outline-primary">View Facial</a></p>
     					</div>
     				</div>
@@ -426,7 +432,7 @@ $stmt->close();
     					<div class="text text-center pt-4">
     						<h3><a href="#">Manicure</a></h3>
     						<p>A manicure shapes nails, cares for cuticles, and adds polish for a neat look.</p>
-    						<p class="price"><span>$5.90</span></p>
+    						
     						<p><a href="services.html" class="btn btn-primary btn-outline-primary">View Manicure</a></p>
     					</div>
     				</div>
@@ -437,8 +443,30 @@ $stmt->close();
     					<div class="text text-center pt-4">
     						<h3><a href="#">Makeup</a></h3>
     						<p>Our professional makeup services enhance your features, creating a flawless look for any occasion.</p>
-    						<p class="price"><span>$5.90</span></p>
-    						<p><a href="services.html" class="btn btn-primary btn-outline-primary">View Makeup</a></p>
+    						
+    						<p><a href="services.php" class="btn btn-primary btn-outline-primary">View Makeup</a></p>
+    					</div>
+    				</div>
+        	</div>
+			<div class="col-md-3">
+        		<div class="menu-entry">
+    					<a href="#" class="img" style="background-image: url(images/nailcosture.jpg);"></a>
+    					<div class="text text-center pt-4">
+    						<h3><a href="#">Nail Styling</a></h3>
+    						<p>Our professional makeup services enhance your features, creating a flawless look for any occasion.</p>
+    						
+    						<p><a href="services.php" class="btn btn-primary btn-outline-primary">View Nail Styling</a></p>
+    					</div>
+    				</div>
+        	</div>
+			<div class="col-md-3">
+        		<div class="menu-entry">
+    					<a href="#" class="img" style="background-image: url(images/eyebrowthreading.jpg);"></a>
+    					<div class="text text-center pt-4">
+    						<h3><a href="#">Brow and Lash</a></h3>
+    						<p>Our professional makeup services enhance your features, creating a flawless look for any occasion.</p>
+    						
+    						<p><a href="services.php" class="btn btn-primary btn-outline-primary">View Brow & Lash</a></p>
     					</div>
     				</div>
         	</div>
@@ -476,34 +504,33 @@ $stmt->close();
 		              	<div class="row">
 		              		<div class="col-md-4 text-center">
 		              			<div class="menu-wrap">
-		              				<a href="#" class="menu-img img mb-4" style="background-image: url(images/niveafacewash2.jpg);"></a>
+		              				<a href="#" class="menu-img img mb-4" style="background-image: url(images/niveafacewash3.png);"></a>
 		              				<div class="text">
 		              					<h3><a href="#">Nivea</a></h3>
 		              					<p>Nivea Facewash deeply cleanses and refreshes the skin, leaving it smooth, soft, and nourished.</p>
-		              					<p class="price"><span>$2.90</span></p>
-		              					<p><a href="cart.html" class="btn btn-primary btn-outline-primary">Add to cart</a></p>
+		              					<p class="price"><span>Rs.350</span></p>
+		              					
 		              				</div>
 		              			</div>
 		              		</div>
 		              		<div class="col-md-4 text-center">
 		              			<div class="menu-wrap">
-		              				<a href="#" class="menu-img img mb-4" style="background-image: url(images/cataphil2.png);"></a>
+		              				<a href="#" class="menu-img img mb-4" style="background-image: url(images/cataphil3.png);"></a>
 		              				<div class="text">
 		              					<h3><a href="#">Cetaphil</a></h3>
 		              					<p>Cetaphil Facewash gently cleanses and hydrates, leaving skin soft and refreshed without stripping moisture.</p>
-		              					<p class="price"><span>$2.90</span></p>
-		              					<p><a href="cart.html" class="btn btn-primary btn-outline-primary">Add to cart</a></p>
+		              					<p class="price"><span>Rs.300</span></p>
+		              					
 		              				</div>
 		              			</div>
 		              		</div>
 		              		<div class="col-md-4 text-center">
 		              			<div class="menu-wrap">
-		              				<a href="#" class="menu-img img mb-4" style="background-image: url(images/neutrogena.png);"></a>
+		              				<a href="#" class="menu-img img mb-4" style="background-image: url(images/neutrogena2.png);"></a>
 		              				<div class="text">
 		              					<h3><a href="#">Neutrogena </a></h3>
 		              					<p>Neutrogena Facewash deeply cleanses, removing dirt and oil, leaving your skin fresh, clear, and soft.</p>
-		              					<p class="price"><span>$2.90</span></p>
-		              					<p><a href="cart.html" class="btn btn-primary btn-outline-primary">Add to cart</a></p>
+		              					<p class="price"><span>Rs.270</span></p>
 		              				</div>
 		              			</div>
 		              		</div>
@@ -514,34 +541,31 @@ $stmt->close();
 		                <div class="row">
 		              		<div class="col-md-4 text-center">
 		              			<div class="menu-wrap">
-		              				<a href="#" class="menu-img img mb-4" style="background-image: url(images/olaycream3.jpg);"></a>
+		              				<a href="#" class="menu-img img mb-4" style="background-image: url(images/lakme1.png);"></a>
 		              				<div class="text">
-		              					<h3><a href="#">Olay White</a></h3>
-		              					<p>Olay White Cream brightens and evens skin tone, providing deep hydration for a radiant, youthful glow.</p>
-		              					<p class="price"><span>$2.90</span></p>
-		              					<p><a href="cart.html" class="btn btn-primary btn-outline-primary">Add to cart</a></p>
+		              					<h3><a href="#">Lakme</a></h3>
+		              					<p>Lakme Cream brightens and evens skin tone, providing deep hydration for a radiant, youthful glow.</p>
+		              					<p class="price"><span>Rs.350</span></p>
 		              				</div>
 		              			</div>
 		              		</div>
 		              		<div class="col-md-4 text-center">
 		              			<div class="menu-wrap">
-		              				<a href="#" class="menu-img img mb-4" style="background-image: url(images/pondswhitecream.webp);"></a>
+		              				<a href="#" class="menu-img img mb-4" style="background-image: url(images/pondswhitecream1.png);"></a>
 		              				<div class="text">
 		              					<h3><a href="#">Pond's White</a></h3>
 		              					<p>Pond's White Cream helps lighten skin, reduce dark spots, and provides a smooth, radiant complexion.</p>
-		              					<p class="price"><span>$2.90</span></p>
-		              					<p><a href="cart.html" class="btn btn-primary btn-outline-primary">Add to cart</a></p>
+		              					<p class="price"><span>Rs.180</span></p>
 		              				</div>
 		              			</div>
 		              		</div>
 		              		<div class="col-md-4 text-center">
 		              			<div class="menu-wrap">
-		              				<a href="#" class="menu-img img mb-4" style="background-image: url(images/himalayaglow.jpg);"></a>
+		              				<a href="#" class="menu-img img mb-4" style="background-image: url(images/himalayaglow1.png);"></a>
 		              				<div class="text">
 		              					<h3><a href="#">Himalaya Glow</a></h3>
 		              					<p>Himalaya Glow evens skin tone, brightens complexion, and nourishes with natural ingredients for a healthy, radiant look.</p>
-		              					<p class="price"><span>$2.90</span></p>
-		              					<p><a href="cart.html" class="btn btn-primary btn-outline-primary">Add to cart</a></p>
+		              					<p class="price"><span>Rs.265</span></p>
 		              				</div>
 		              			</div>
 		              		</div>
@@ -552,34 +576,31 @@ $stmt->close();
 		                <div class="row">
 		              		<div class="col-md-4 text-center">
 		              			<div class="menu-wrap">
-		              				<a href="#" class="menu-img img mb-4" style="background-image: url(images/maybellinefound2.jpg);"></a>
+		              				<a href="#" class="menu-img img mb-4" style="background-image: url(images/maybellinefound3.png);"></a>
 		              				<div class="text">
 		              					<h3><a href="#">Maybelline Fit Me</a></h3>
 		              					<p>Maybelline Fit Me Foundation offers natural coverage, matches your skin tone, and controls shine for a flawless finish.</p>
-		              					<p class="price"><span>$2.90</span></p>
-		              					<p><a href="cart.html" class="btn btn-primary btn-outline-primary">Add to cart</a></p>
+		              					<p class="price"><span>Rs.350</span></p>
 		              				</div>
 		              			</div>
 		              		</div>
 		              		<div class="col-md-4 text-center">
 		              			<div class="menu-wrap">
-		              				<a href="#" class="menu-img img mb-4" style="background-image: url(images/lorealfound1.jpg);"></a>
+		              				<a href="#" class="menu-img img mb-4" style="background-image: url(images/lorealfoundation2.png);"></a>
 		              				<div class="text">
 		              					<h3><a href="#"> L'Oréal Infallible</a></h3>
 		              					<p>L'Oréal Infallible Foundation offers long-lasting, full coverage that stays fresh and matte all day, ensuring a flawless finish.</p>
-		              					<p class="price"><span>$2.90</span></p>
-		              					<p><a href="cart.html" class="btn btn-primary btn-outline-primary">Add to cart</a></p>
+		              					<p class="price"><span>Rs.890</span></p>
 		              				</div>
 		              			</div>
 		              		</div>
 		              		<div class="col-md-4 text-center">
 		              			<div class="menu-wrap">
-		              				<a href="#" class="menu-img img mb-4" style="background-image: url(images/macfoundation.jpg);"></a>
+		              				<a href="#" class="menu-img img mb-4" style="background-image: url(images/macfoundation1.png);"></a>
 		              				<div class="text">
 		              					<h3><a href="#">MAC Studio Fix</a></h3>
 		              					<p>MAC Studio Fix Foundation provides buildable coverage, a matte finish, and all-day wear for a smooth, flawless complexion.</p>
-		              					<p class="price"><span>$2.90</span></p>
-		              					<p><a href="cart.html" class="btn btn-primary btn-outline-primary">Add to cart</a></p>
+		              					<p class="price"><span>Rs.2500</span></p>
 		              				</div>
 		              			</div>
 		              		</div>

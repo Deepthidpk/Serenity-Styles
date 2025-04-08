@@ -147,8 +147,8 @@
 	    				<div class="col-md-4 d-flex ftco-animate">
 	    					<div class="icon"><span class="icon-clock-o"></span></div>
 	    					<div class="text">
-	    						<h3>Open Monday-Saturday</h3>
-	    						<p>8:00am - 6:00pm</p>
+	    						<h3>Open Monday-Sunday</h3>
+	    						<p>4:00am - 10:00pm</p>
 	    					</div>
 	    				</div>
 	    			</div>
@@ -190,22 +190,22 @@
     				<div class="row">
     					<div class="col-md-6">
     						<div class="menu-entry">
-		    					<a href="#" class="img" style="background-image: url(images/niveafacewash2.jpg);"></a>
+		    					<a href="#" class="img" style="background-image: url(images/niveafacewash3.png);"></a>
 		    				</div>
     					</div>
     					<div class="col-md-6">
     						<div class="menu-entry mt-lg-4">
-		    					<a href="#" class="img" style="background-image: url(images/olaycream3.jpg);"></a>
+		    					<a href="#" class="img" style="background-image: url(images/lakme1.png);"></a>
 		    				</div>
     					</div>
     					<div class="col-md-6">
     						<div class="menu-entry">
-		    					<a href="#" class="img" style="background-image: url(images/macfoundation.jpg);"></a>
+		    					<a href="#" class="img" style="background-image: url(images/macfoundation1.png);"></a>
 		    				</div>
     					</div>
     					<div class="col-md-6">
     						<div class="menu-entry mt-lg-4">
-		    					<a href="#" class="img" style="background-image: url(images/aveeno.jpg);"></a>
+		    					<a href="#" class="img" style="background-image: url(images/lushshampoo1.png);"></a>
 		    				</div>
     					</div>
     				</div>
@@ -276,6 +276,30 @@
     						<p>Our professional makeup services enhance your features, creating a flawless look for any occasion.</p>
     						<p class="price"><span>$5.90</span></p>
     						<p><a href="services.html" class="btn btn-primary btn-outline-primary">View Makeup</a></p>
+    					</div>
+    				</div>
+        	</div>
+
+
+			<div class="col-md-3">
+        		<div class="menu-entry">
+    					<a href="#" class="img" style="background-image: url(images/nailcosture.jpg);"></a>
+    					<div class="text text-center pt-4">
+    						<h3><a href="#">Nail Styling</a></h3>
+    						<p>Nails are lightweight, durable, and flexible extensions, combining the best of acrylic and gel.</p>
+    						<p class="price"><span>$5.90</span></p>
+    						<p><a href="services.html" class="btn btn-primary btn-outline-primary">View Manicure</a></p>
+    					</div>
+    				</div>
+        	</div>
+			<div class="col-md-3">
+        		<div class="menu-entry">
+    					<a href="#" class="img" style="background-image: url(images/eyebrowthreading.jpg);"></a>
+    					<div class="text text-center pt-4">
+    						<h3><a href="#">Brow and Lash</a></h3>
+    						<p>Nails are lightweight, durable, and flexible extensions, combining the best of acrylic and gel.</p>
+    						<p class="price"><span>$5.90</span></p>
+    						<p><a href="services.html" class="btn btn-primary btn-outline-primary">View Manicure</a></p>
     					</div>
     				</div>
         	</div>

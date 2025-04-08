@@ -72,10 +72,13 @@ function smtp_cancellation_mailer($to, $time, $date, $service_name) // Calling f
         <span class='highlight' style='color: #c49a6c; font-weight: bold;'>$time</span> has been <b>cancelled</b> due to the following reason: <br><br>
         <span class='highlight' style='color: red; font-weight: bold;'>$reason</span> <br><br>
         We sincerely apologize for any inconvenience this may cause. If you would like to reschedule  <a href='Visit:http://localhost/coffeeduplicate/userindex.php' style='color: #c49a6c;'>serenitystyles.com</a>
-    </p>
+    <br><br>
+    Your refund has been processed, it will reflect in your bank within 2 working days.
+            </p>
     
     <div class='footer' style='margin-top: 20px; padding-top: 10px; border-top: 1px solid #ddd; font-size: 14px; color: #666;'>
-        Thank you for understanding. We hope to serve you in the future! <br>
+       
+    Thank you for understanding. We hope to serve you in the future! <br>
         <strong>Location:</strong> Hill top Street, Nilambur, Malappuram, Kerala, India<br>
         <strong>Phone:</strong> 8590918598<br>
         <strong>Website:</strong> <a href='http://localhost/coffeeduplicate/userindex.php' style='color: #c49a6c;'>Serenity Styles</a>

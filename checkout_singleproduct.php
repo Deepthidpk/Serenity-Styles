@@ -350,7 +350,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             })
                         }).then(res => res.text()).then(data => {
                             alert(data);
-                            window.location.href = 'order_success.php';
+                            window.location.href = 'order.php';
                         });
                     },
                     "prefill": {

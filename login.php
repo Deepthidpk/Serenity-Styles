@@ -5,6 +5,7 @@ $client->setClientId("91981920181-u001cgasvcrtcpblsfev8mhuccle262f.apps.googleus
 $client->setClientSecret("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");
 $client->setRedirectUri("http://localhost/coffeeduplicate/userindex.php");
 $client->addScope("email");
+
 $client->addScope("profile");
 $url=$client->createAuthUrl();
 
@@ -28,23 +29,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Check if user is active
     if ($status === 'Active') {
-      if ($demail === $email && $dpassword === $password) {
+      if (password_verify($password, $dpassword)) {
         $_SESSION['email'] = $demail;
-         if ($row['role'] == 'admin') {
-          $_SESSION['username'] = "admin";
-          header('location: http://localhost/coffeeduplicate/admindashboard.php');
+        if ($row['role'] == 'admin') {
+            $_SESSION['username'] = "admin";
+            header('Location: http://localhost/coffeeduplicate/admindashboard.php');
         } else if ($row['role'] == 'user') {
-          $_SESSION['username'] = "user";
-          $_SESSION['user_id'] = $row['user_id'];
-          header('location:userindex.php');
+            $_SESSION['username'] = "user";
+            $_SESSION['user_id'] = $row['user_id'];
+            
+            header('Location: userindex.php');
         } else {
-          header('location:login.php');
+            header('Location: login.php');
         }
         exit();
-      
     } else {
-      $error_message = "Invalid email or password!";
-  }
+        $error_message = "Invalid email or password!";
+    }
 } else {
   $error_message = "Your account is blocked. Please contact support.";
 }

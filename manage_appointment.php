@@ -1,29 +1,23 @@
 <?php
 include 'connect.php';
 
-
-if (!isset($_SESSION['username'])) { // Checks if the user is logged in
-
-    header('Location: login.php'); // Redirects to login.php if the user is not logged in
-    exit(); // It's good practice to call exit() after header to stop further script execution
+if (!isset($_SESSION['username'])) {
+    header('Location: login.php');
+    exit();
 }
-//above is for security check ,prevent unauthorized access
 
-// Default SQL query
 $sql = "SELECT * FROM tbl_appointment WHERE status='Pending' OR status='Approved'";
-
-// Check if a filter month is selected
-if(isset($_POST['filter_month']) && !empty($_POST['filter_month'])) {
+if (isset($_POST['filter_month']) && !empty($_POST['filter_month'])) {
     $selected_month = $_POST['filter_month'];
-    // Format: YYYY-MM
     $year = substr($selected_month, 0, 4);
     $month = substr($selected_month, 5, 2);
-    
     $sql = "SELECT * FROM tbl_appointment WHERE (status='Pending' OR status='Approved') AND YEAR(date) = '$year' AND MONTH(date) = '$month'";
 }
-
 $result = $conn->query($sql);
 
+if (isset($_GET['msg'])) {
+    echo "<div class='alert alert-success'>" . htmlspecialchars($_GET['msg']) . "</div>";
+}
 ?>
 
 <!DOCTYPE html>
@@ -34,10 +28,10 @@ $result = $conn->query($sql);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <style>
+     <style>
         * {
             margin: 0;
             padding: 0;
@@ -262,133 +256,134 @@ $result = $conn->query($sql);
 </head>
 
 <body>
-    <!-- <div class="container"> -->
-        <div class="sidebar">
-            <div class="sidebar-header">
-                <div class="profile-img">
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="profile-img">
                 <img src="images/adminprofile.jpg">
-                </div>
-                <h3>Admin Panel</h3>
             </div>
-            <ul class="nav-links">
-                <li><?php echo "Hii, " . $_SESSION['username']; ?></li>
-                <li><a href="admindashboard.php">Dashboard</a></li>
-                <li><a href="viewservices.php">Services</a></li>
-                <li><a href="viewproducts.php">Products</a></li>
-                <li><a href="manage_appointment.php">Appointments</a></li>
-                <li><a href="viewuser.php">Users</a></li>
-                <li><a href="vieworders.php">Orders</a></li>
-                <li><a href="viewreview.php">Reviews</a></li>
-                <li><a href="logout.php">Logout</a></li>
+            <h3>Admin Panel</h3>
+        </div>
+        <ul class="nav-links">
+            <li><?php echo "Hii, " . $_SESSION['username']; ?></li>
+            <li><a href="admindashboard.php">Dashboard</a></li>
+            <li><a href="viewservices.php">Services</a></li>
+            <li><a href="viewproducts.php">Products</a></li>
+            <li><a href="manage_appointment.php">Appointments</a></li>
+            <li><a href="viewuser.php">Users</a></li>
+            <li><a href="vieworders.php">Orders</a></li>
+            <li><a href="viewreview.php">Reviews</a></li>
+            <li><a href="logout.php">Logout</a></li>
+        </ul>
+    </div>
 
-            </ul>
+    <div class="main-content">
+        <div class="header">
+            <h2>Manage Users</h2>
+            <input type="text" class="search-bar" placeholder="Search...">
         </div>
 
-        <div class="main-content">
-            <div class="header">
-                <h2>Manage Users</h2>
-                <input type="text" class="search-bar" placeholder="Search...">
-            </div>
-            
-            <!-- Month Filter Form -->
-            <form method="post" action="" class="filter-container">
-                <label for="filter_month">Filter by Month:</label>
-                <input type="month" id="filter_month" name="filter_month" class="month-picker" value="<?php echo isset($_POST['filter_month']) ? $_POST['filter_month'] : ''; ?>">
-                <button type="submit" class="filter-btn">Apply Filter</button>
-                <button type="submit" class="reset-btn" name="reset">Reset</button>
-            </form>
+        <form method="post" action="" class="filter-container">
+            <label for="filter_month">Filter by Month:</label>
+            <input type="month" id="filter_month" name="filter_month" class="month-picker" value="<?php echo isset($_POST['filter_month']) ? $_POST['filter_month'] : ''; ?>">
+            <button type="submit" class="filter-btn">Apply Filter</button>
+            <button type="submit" class="reset-btn" name="reset">Reset</button>
+        </form>
 
-            <div class="cards-container">
-            </div>
-            
-            <div class="table-container">
-                <table id="dataTable">
-                    <thead>
-                        <tr>
-                            <th>Sl.NO</th>
-                            <th>Name</th>
-                            <th>Phone No</th>
-                            <th>Date</th>
-                            <th>Time</th>
-                            <th>Service Name</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+        <div class="cards-container"></div>
+
+        <div class="table-container">
+            <table id="dataTable">
+                <thead>
+                    <tr>
+                        <th>Sl.NO</th>
+                        <th>Name</th>
+                        <th>Phone No</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Service Name</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
                     <?php
-if ($result->num_rows > 0) {
-    $i = 1;
-    while ($row = $result->fetch_assoc()) {
-        $sql="SELECT service_name FROM tbl_services WHERE service_id=$row[service_id] AND status='active'";
-        $result1=$conn->query($sql);
-        if($result1->num_rows>0){
-            $col=$result1->fetch_assoc();
-        }
-        
-        echo "<tr>
-            <td>" . $i . "</td>
-            <td>" . htmlspecialchars($row["name"]) . "</td>
-            <td>" . htmlspecialchars($row["phone_no"]) . "</td>
-            <td>" . htmlspecialchars($row["date"]) . "</td>
-            <td>" . htmlspecialchars($row["time"]) . "</td>
-            <td>" . htmlspecialchars($col["service_name"]) . "</td>
-            <td>" . htmlspecialchars($row["status"]) . "</td>
-            <td>";
-        
-        // Check user status to determine which button to show
-        if ($row['status'] == 'Pending') {
-            echo "<a href='update_appointmentstatus.php?id=" . $row['appointment_id'] . "&status=Rejected' class='btn btn-xs btn-danger'>Reject</a>";
-         
-            echo "<a href='update_appointmentstatus.php?id=" . $row['appointment_id'] . "&status=Approved' class='btn btn-xs btn-success'>Accept</a>";
-        }
-        else{
-            if ($row['status'] == 'Approved') {
-                echo "<button  class='btn btn-xs btn-success' disabled>Approved</button>";
-                echo "<a href='update_appointmentstatus.php?id=" . $row['appointment_id'] . "&status=Cancelled' class='btn btn-xs btn-danger'>Cancelled</a>";
-            }
+                    if ($result->num_rows > 0) {
+                        $i = 1;
+                        while ($row = $result->fetch_assoc()) {
+                            $sql = "SELECT service_name FROM tbl_services WHERE service_id=$row[service_id] AND status='active'";
+                            $result1 = $conn->query($sql);
+                            if ($result1->num_rows > 0) {
+                                $col = $result1->fetch_assoc();
+                            }
 
-        }
-        echo "</td>
-          </tr>";
-        $i++;
-    }
-} else {
-    echo "<tr><td colspan='8'>No appointments found.</td></tr>";
-}
-?>
+                            echo "<tr>
+                            <td>" . $i . "</td>
+                            <td>" . htmlspecialchars($row["name"]) . "</td>
+                            <td>" . htmlspecialchars($row["phone_no"]) . "</td>
+                            <td>" . htmlspecialchars($row["date"]) . "</td>
+                            <td>" . htmlspecialchars($row["time"]) . "</td>
+                            <td>" . htmlspecialchars($col["service_name"]) . "</td>
+                            <td>" . htmlspecialchars($row["status"]) . "</td>
+                            <td>";
 
-                    </tbody>
-                </table>
-            </div>
+                            if ($row['status'] == 'Pending') {
+                                echo "<button class='btn btn-xs btn-danger swal-action' data-id='" . $row['appointment_id'] . "' data-status='Rejected'>Reject</button> ";
+                                echo "<button class='btn btn-xs btn-success swal-action' data-id='" . $row['appointment_id'] . "' data-status='Approved'>Accept</button>";
+                            } elseif ($row['status'] == 'Approved') {
+                                echo "<button class='btn btn-xs btn-success' disabled>Approved</button> ";
+                                echo "<button class='btn btn-xs btn-danger swal-action' data-id='" . $row['appointment_id'] . "' data-status='Cancelled'>Cancel</button>";
+                            }
+
+                            echo "</td></tr>";
+                            $i++;
+                        }
+                    } else {
+                        echo "<tr><td colspan='8'>No appointments found.</td></tr>";
+                    }
+                    ?>
+                </tbody>
+            </table>
         </div>
     </div>
 
     <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const searchBar = document.querySelector(".search-bar");
-        const tableRows = document.querySelectorAll("tbody tr");
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchBar = document.querySelector(".search-bar");
+            const tableRows = document.querySelectorAll("tbody tr");
 
-        searchBar.addEventListener("keyup", function () {
-            const searchText = searchBar.value.toLowerCase();
+            searchBar.addEventListener("keyup", function () {
+                const searchText = searchBar.value.toLowerCase();
+                tableRows.forEach(row => {
+                    const userName = row.cells[1].textContent.toLowerCase();
+                    row.style.display = userName.includes(searchText) ? "" : "none";
+                });
+            });
 
-            tableRows.forEach(row => {
-                const userName = row.cells[1].textContent.toLowerCase();
-                if (userName.includes(searchText)) {
-                    row.style.display = "";
-                } else {
-                    row.style.display = "none";
-                }
+            const swalButtons = document.querySelectorAll(".swal-action");
+            swalButtons.forEach(btn => {
+                btn.addEventListener("click", function () {
+                    const id = this.dataset.id;
+                    const status = this.dataset.status;
+
+                    Swal.fire({
+                        title: `Are you sure?`,
+                        text: `You are about to mark this appointment as "${status}".`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: `Yes, ${status} it!`
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = `update_appointmentstatus.php?id=${id}&status=${status}`;
+                        }
+                    });
+                });
             });
         });
-        
-        // Handle reset button
-        document.querySelector('.reset-btn').addEventListener('click', function(e) {
-            e.preventDefault();
-            window.location.href = 'manage_appointment.php';
-        });
-    });
-</script>
+    </script>
 </body>
 
 </html>
+
+    
