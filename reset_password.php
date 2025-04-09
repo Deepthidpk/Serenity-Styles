@@ -25,28 +25,34 @@
 </head>
 
 <body>
-  <?php
-  include "connect.php";
-  if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset_password'])) {
-      $newPassword = $_POST['new_password'];
-      $confirmPassword = $_POST['confirm_password'];
+<?php
+include "connect.php";
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset_password'])) {
+    $newPassword = $_POST['new_password'];
+    $confirmPassword = $_POST['confirm_password'];
 
-      if ($newPassword === $confirmPassword) {
-          $email = $_POST["email"];
-          if(isset($email)){
-              $sql = "UPDATE tbl_login SET password = '$newPassword' WHERE email = '$email'";
-              $result = $conn->query($sql);
+    if ($newPassword === $confirmPassword) {
+        $email = $_POST["email"];
+        if (isset($email)) {
+            // Hash the password
+            $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
 
-              if ($result) {
-                  echo "<script>Swal.fire('Success!', 'Password updated successfully! You can now login with your new password.', 'success');</script>";
-                  header("Refresh:5; url=login.php");
-              } else {
-                  echo "<script>Swal.fire('Error!', 'Passwords do not match!', 'error');</script>";
-              }
-          }
-      }
-  }
-  ?>
+            // Update the hashed password in the database
+            $sql = "UPDATE tbl_login SET password = '$hashedPassword' WHERE email = '$email'";
+            $result = $conn->query($sql);
+
+            if ($result) {
+                echo "<script>Swal.fire('Success!', 'Password updated successfully! You can now login with your new password.', 'success');</script>";
+                header("Refresh:5; url=login.php");
+            } else {
+                echo "<script>Swal.fire('Error!', 'Database update failed!', 'error');</script>";
+            }
+        }
+    } else {
+        echo "<script>Swal.fire('Error!', 'Passwords do not match!', 'error');</script>";
+    }
+}
+?>
 
   <!-- Navigation Bar -->
   <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
